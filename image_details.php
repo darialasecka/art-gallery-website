@@ -1,14 +1,11 @@
 <?php
 require_once('database.php');
 $conn = connect();
-$stmt = $conn->prepare("SELECT * FROM picture");
+$stmt = $conn->prepare("SELECT * FROM picture WHERE id=:id");
+$stmt->bindValue(":id", $_GET["id"], PDO::PARAM_INT);
 $stmt->execute();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-$images = $rows[0];
-    
-
-//echo "<img src='".$row['image']."' />";
-
+$details = $rows[0];
 
 ?>
 
@@ -19,8 +16,7 @@ $images = $rows[0];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <!-- ========== Title ========== -->
-    <title>Galeria Obrazów</title>
-
+    <title>Obraz</title>
     <!-- ========== STYLESHEETS ========== -->
     <!-- Bootstrap CSS -->
     <link href="assets/css/bootstrap.min.css" rel="stylesheet">
@@ -86,20 +82,6 @@ $images = $rows[0];
             </div>
             <!--main menu end -->
 
-            <!--filter menu -->
-            <div class="side_menu_section">
-                <h4 class="side_title">Filtruj:</h4>
-                <ul  id="filtr-container"  class="filter_nav">
-                    <li  data-filter="*" class="active"><a href="javascript:void(0)" >all</a></li>
-                    <li data-filter=".branding"> <a href="javascript:void(0)">branding</a></li>
-                    <li data-filter=".design"><a href="javascript:void(0)">design</a></li>
-                    <li data-filter=".photography"><a href="javascript:void(0)">photography</a></li>
-                    <li data-filter=".architecture"><a href="javascript:void(0)">architecture</a></li>
-                    <li data-filter=".animals"> <a href="javascript:void(0)">animals</a></li>
-                </ul>
-            </div>
-            <!--filter menu end -->
-
             <!--social and copyright -->
             <div class="side_menu_bottom">
                 <div class="side_menu_bottom_inner">
@@ -131,38 +113,37 @@ $images = $rows[0];
 
         <!--=================== content body ====================-->
         <div class="col-lg-10 col-md-9 col-12 body_block  align-content-center">
-            <div class="container-fluid">
-                    <!--=================== main gallery start====================-->
-                    <div class="grid img-container justify-content-center no-gutters">
-                        
+            <div style='color: black; font-size: 50px; font-weight: bold;'><?php echo $details['name'];?> </div>
+            <!-- /*echo '<p style="color: black">".$details['name']."</p>';*/ --> 
+            <?php echo "<img src='".$details['image']."' />"; ?> <!-- póżniej zmienszyć rozmier obrazka -->
+            <table class="table table-striped">
+              <tbody>
+                <tr>
+                  <th>Autor</th>
+                  <td><?php echo $details['autor'];?></td>
+                </tr>
+                <tr>
+                  <th>Opis</th>
+                  <td><?php echo $details['description'];?></td>
+                </tr>
+                <?php if(!is_null($details['tags'])): ?>
+                    <tr>
+                      <th>Tagi</th>
+                      <td><?php echo $details['tags'];?> <!-- to w pętli bo będzie więcej, na razie jest tylko jeden --></td>
+                    </tr>
+                <?php endif; ?>
 
-
-                        <?php foreach($rows as $row): ?> <!--pózniej dorobić jakieś skalowanie obrazków-->
-                        <a href="/image_details.php?id=<?php echo $row['id'] ?>/">
-                        
-                        <div class="grid-sizer col-sm-12 col-md-6 col-lg-3"></div>
-                            <div class="grid-item animals col-sm-12 col-md-6 col-lg-3">
-                                <div class="project_box_one">
-                                    <?php echo "<img src='".$row['image']."' />"; ?>
-                                        <div class="product_info">
-                                            <div class="product_info_text">
-                                                <div class="product_info_text_inner">
-                                                    <!--<i class="ion ion-plus"></i>-->
-                                                    <h4><?php echo $row['name']; ?></h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                </div>
-                            </div>
-                        
-                        </a>
-                        <?php endforeach; ?>
-
-
-
-                    </div>
-                    <!--=================== main gallery end====================-->
-                </div>
+                <?php if(is_null($details['comments'])): ?>
+                <tr> 
+                    <td colspan="2">Brak komentarzy</td>
+                </tr>
+                <?php else: ?>
+                <tr>
+                  <th>Komentarze</th>
+                  <td><?php echo $details['comments'];?> <!-- to tak samo, poza tym wyciągnąc opis komentarza na podstawie jego id  --></td>
+                </tr>
+                <?php endif; ?>
+            
         </div>
         <!--=================== content body end ====================-->
     </div>
@@ -180,8 +161,8 @@ $images = $rows[0];
 <!--Portfolio Filter-->
 <script src="assets/js/imgloaded.js"></script>
 <script src="assets/js/isotope.js"></script>
-<!-- Magnific-popup 
-<script src="assets/js/jquery.magnific-popup.min.js"></script>-->
+<!-- Magnific-popup -->
+<script src="assets/js/jquery.magnific-popup.min.js"></script>
 <!--Counter-->
 <script src="assets/js/jquery.counterup.min.js"></script>
 <!-- WOW JS -->
