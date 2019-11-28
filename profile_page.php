@@ -1,12 +1,19 @@
 <?php
 require_once('database.php');
 $conn = connect();
-$stmt = $conn->prepare("SELECT * FROM picture");
+$stmt = $conn->prepare("SELECT * FROM person WHERE nickname=:nickname");
+$nick = urldecode($_GET["nickname"]);
+$nick = substr($nick, 0, -1);
+$stmt->bindValue(":nickname", $nick, PDO::PARAM_INT);
+$stmt->execute();
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$details = $rows[0];
+
+$stmt = $conn->prepare("SELECT * FROM picture WHERE autor=:nickname");
+$stmt->bindValue(":nickname", $details['nickname'], PDO::PARAM_INT);
 $stmt->execute();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $images = $rows[0];
-
-//echo "<img src='".$row['image']."' />";
 
 ?>
 
@@ -17,8 +24,7 @@ $images = $rows[0];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <!-- ========== Title ========== -->
-    <title>Galeria Obrazów</title>
-
+    <title>Profil</title>
     <!-- ========== STYLESHEETS ========== -->
     <!-- Bootstrap CSS -->
     <link href="assets/css/bootstrap.min.css" rel="stylesheet">
@@ -66,7 +72,7 @@ $images = $rows[0];
                         </a>
                     </li>
                     <li>
-                        <a href="portfolio.html">
+                        <a href="/profile_page.php?<?php echo $row['id'] ?>">
                             Twój profil
                         </a>
                     </li>
@@ -83,20 +89,6 @@ $images = $rows[0];
                 </ul>
             </div>
             <!--main menu end -->
-
-            <!--filter menu -->
-            <div class="side_menu_section">
-                <h4 class="side_title">Filtruj:</h4>
-                <ul  id="filtr-container"  class="filter_nav">
-                    <li  data-filter="*" class="active"><a href="javascript:void(0)" >all</a></li>
-                    <li data-filter=".branding"> <a href="javascript:void(0)">branding</a></li>
-                    <li data-filter=".design"><a href="javascript:void(0)">design</a></li>
-                    <li data-filter=".photography"><a href="javascript:void(0)">photography</a></li>
-                    <li data-filter=".architecture"><a href="javascript:void(0)">architecture</a></li>
-                    <li data-filter=".animals"> <a href="javascript:void(0)">animals</a></li>
-                </ul>
-            </div>
-            <!--filter menu end -->
 
             <!--social and copyright -->
             <div class="side_menu_bottom">
@@ -129,13 +121,36 @@ $images = $rows[0];
 
         <!--=================== content body ====================-->
         <div class="col-lg-10 col-md-9 col-12 body_block  align-content-center">
+           <!--=================== person data ====================-->
+
+            <h3>Twoje dane:</h3>
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                      <th>Nick</th>
+                      <td><?php echo $details['nickname'];?></td>
+                    </tr>
+                    <tr>
+                      <th>Imie</th>
+                      <td><?php echo $details['name'];?></td>
+                    </tr>
+                    <tr>
+                      <th>Nazwisko</th>
+                      <td><?php echo $details['lastname'];?></td>
+                    </tr>
+                    <tr>
+                      <th>Wiek</th>
+                      <td><?php echo $details['age'];?> </td>
+                    </tr>
+                </tbody>
+            </table>
+
             <div class="container-fluid">
                 <!--=================== main gallery start====================-->
                 <div class="grid img-container justify-content-center no-gutters">
-                    
                     <?php foreach($rows as $row): ?> <!--pózniej dorobić jakieś skalowanie obrazków-->
                     <a href="/image_details.php?id=<?php echo $row['id'] ?>/">
-                    
+
                     <div class="grid-sizer col-sm-12 col-md-6 col-lg-3"></div>
                         <div class="grid-item animals col-sm-12 col-md-6 col-lg-3">
                             <div class="project_box_one">
@@ -153,12 +168,11 @@ $images = $rows[0];
                     
                     </a>
                     <?php endforeach; ?>
-
                 </div>
                 <!--=================== main gallery end====================-->
             </div>
+            <!--=================== content body end ====================-->
         </div>
-        <!--=================== content body end ====================-->
     </div>
 </div>
 
@@ -174,8 +188,6 @@ $images = $rows[0];
 <!--Portfolio Filter-->
 <script src="assets/js/imgloaded.js"></script>
 <script src="assets/js/isotope.js"></script>
-<!-- Magnific-popup 
-<script src="assets/js/jquery.magnific-popup.min.js"></script>-->
 <!--Counter-->
 <script src="assets/js/jquery.counterup.min.js"></script>
 <!-- WOW JS -->

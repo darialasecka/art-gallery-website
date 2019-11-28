@@ -120,7 +120,16 @@ $details = $rows[0];
               <tbody>
                 <tr>
                   <th>Autor</th>
-                  <td><?php echo $details['autor'];?></td>
+                    <td>
+                        <a href="/profile_page.php?nickname=<?php echo urlencode($details['autor']) ?>/"><?php echo $details['autor']; //powiększyć czcionkę później?></a>
+                    <!-- <?php 
+                    echo '<a href="/profile_page.php?nickname='.urlencode($details['autor']).'/">'.$details['autor'].'</a>';
+                    //echo '<a href="/profile_page.php?nickname='.$details['autor'].'/>Nic</a>'; 
+                    ?> -->
+
+                    <!-- <?php echo $details['autor'];?> -->
+                      
+                  </td>
                 </tr>
                 <tr>
                   <th>Opis</th>
@@ -161,8 +170,6 @@ $details = $rows[0];
 <!--Portfolio Filter-->
 <script src="assets/js/imgloaded.js"></script>
 <script src="assets/js/isotope.js"></script>
-<!-- Magnific-popup -->
-<script src="assets/js/jquery.magnific-popup.min.js"></script>
 <!--Counter-->
 <script src="assets/js/jquery.counterup.min.js"></script>
 <!-- WOW JS -->
