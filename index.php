@@ -137,13 +137,9 @@ $images = $rows[0];
                 <div class="container-fluid">
                     <!--=================== main gallery start====================-->
                     <div class="grid img-container justify-content-center no-gutters">
-                        <div class="grid-sizer col-sm-12 col-md-6 col-lg-3"></div>
                         
-
-
-
-
                         <?php foreach($rows as $row): ?>
+                        <div class="grid-sizer col-sm-12 col-md-6 col-lg-3"></div>
                         <div class="grid-item animals col-sm-12 col-md-6 col-lg-3">
                             <div class="project_box_one">
                                 <?php echo "<img src='".$row['image']."' />"; ?>
@@ -157,9 +153,7 @@ $images = $rows[0];
                                     </div>
                                 </div>
                             </div>
-                        </div>  
                         <?php endforeach; ?>
-
                     </div>
                     <!--=================== main gallery end====================-->
                 </div>
