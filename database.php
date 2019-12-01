@@ -27,7 +27,7 @@ function add_tag($slug){ //działa
 	echo "Tag został dodany";
 }
 
-function add_comment($id, $autor, $added, $content){
+function add_comment($id, $autor, $added, $content){ //z tego co widziałam w bazie danych, to też działa
 	$conn = connect();
 	$sql = $conn->prepare("INSERT INTO comment (id, autor, added, content)
 								VALUES (:id, :autor, :added, :content)");
@@ -52,7 +52,7 @@ function add_person($nickname, $name, $lastname, $email, $age){ //działa
 	echo "Osoba została dodana";
 }
 
-function add_picture($id, $image, $name, $autor, $tags, $comments, $description){ 
+function add_picture($id, $image, $name, $autor, $tags, $comments, $description){ //działa, ale ścieżkę trzeba śmiesznie dodawać xd
 	$conn = connect();
 	$sql = $conn->prepare("INSERT INTO picture (id, image, name, autor, tags, comments, description )
 								VALUES (:id, :image, :name, :autor, :tags, :comments, :description)");
@@ -65,5 +65,22 @@ function add_picture($id, $image, $name, $autor, $tags, $comments, $description)
 	$sql->bindValue(':description', $description);
 	$sql->execute();
 	echo "Obraz został dodany";
+}
+
+function add_gallery($id, $name, $person, $pictures, $created, $latest_update, $tags, $comments, $description){
+	$conn = connect();
+	$sql = $conn->prepare("INSERT INTO gallery (id, name, person, pictures, created, latest_update, tags, comments, description)
+							VALUES (:id, :name, :person, :pictures, :created, :latest_update, :tags, :comments, :description)");
+	$sql->bindValue(':id', $id);
+	$sql->bindValue(':name', $name);
+	$sql->bindValue(':person', $person);
+	$sql->bindValue(':pictures', $pictures);
+	$sql->bindValue(':created', $created);
+	$sql->bindValue(':latest_update', $latest_update);
+	$sql->bindValue(':tags', $tags);
+	$sql->bindValue(':comments', $comments);
+	$sql->bindValue(':description', $description);
+	$sql->execute();
+	echo "Galleria została stworzoa pomyślnie";
 }
 ?>

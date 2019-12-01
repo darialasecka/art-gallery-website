@@ -7,6 +7,12 @@ $stmt->execute();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $details = $rows[0];
 
+$stmt = $conn->prepare("SELECT * FROM comment WHERE id=:id");
+$stmt->bindValue(":id", $details['comments'], PDO::PARAM_INT);
+$stmt->execute();
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$comments = $rows[0];
+
 ?>
 
 <!DOCTYPE html>
@@ -121,7 +127,7 @@ $details = $rows[0];
                 <tr>
                   <th>Autor</th>
                     <td>
-                        <a href="/profile_page.php?nickname=<?php echo urlencode($details['autor']) ?>/"><?php echo $details['autor']; //powiększyć czcionkę później?></a>
+                        <a  style="font-size: 19px;" href="/profile_page.php?nickname=<?php echo urlencode($details['autor']) ?>/"><?php echo $details['autor']; //powiększyć czcionkę później?></a>
                     <!-- <?php 
                     echo '<a href="/profile_page.php?nickname='.urlencode($details['autor']).'/">'.$details['autor'].'</a>';
                     //echo '<a href="/profile_page.php?nickname='.$details['autor'].'/>Nic</a>'; 
@@ -149,14 +155,42 @@ $details = $rows[0];
                 <?php else: ?>
                 <tr>
                   <th>Komentarze</th>
-                  <td><?php echo $details['comments'];?> <!-- to tak samo, poza tym wyciągnąc opis komentarza na podstawie jego id  --></td>
+                  <!-- <td>
+                    <table>
+                        <tbody>
+                            <td>
+                                <?php echo $comments['autor'];
+                                      echo "       ";
+                                      echo $comments['added']; //tego czcionkę zmienić pewnie będzie lepiej
+                                ?>
+                            </td>
+                            <td>
+                                <?php echo $comments['content'];?>
+                            </td>
+                        </tbody>
+                    </table>
+                  </td> -->
+                  <td><?php echo $comments['autor']; //zmienjszyć czcionkę tego i daty dodania
+                            echo "&emsp;&emsp;"; // "/t" tylko działające
+                            echo "Data dodania: ".$comments['added'];
+                            echo "<br>";
+                            echo $comments['content'];?> <!-- to w pętli wyswietlać komentarze, może zrobić dla nich osobną tabelę, albo jeszcze coś innego --></td>
                 </tr>
                 <?php endif; ?>
-            
+              </tbody>
+            </table>  
         </div>
-        <!--=================== content body end ====================-->
-    </div>
-</div>
+        <!-- ================= comments ==================== -->
+        <div>
+            <!-- No to tak,
+            tutaj miejsce na napisanie komentarza,
+            i jakiś przycisk submit, i po tym, 
+            albo strona się odświeża, 
+            albo jakaś "animacja" dodawania,
+            w każdym razie coś ogarnąć...
+            -->
+        </div>
+<!--=================== content body end ====================-->
 
 
 <!-- jquery -->
