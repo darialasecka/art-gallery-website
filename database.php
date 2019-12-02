@@ -27,16 +27,17 @@ function add_tag($slug){ //działa
 	echo "Tag został dodany";
 }
 
-function add_comment($id, $autor, $added, $content){ //z tego co widziałam w bazie danych, to też działa
+function add_comment($id, $autor, $content, $where_is, $where_id){ //z tego co widziałam w bazie danych, to też działa
 	$conn = connect();
-	$sql = $conn->prepare("INSERT INTO comment (id, autor, added, content)
-								VALUES (:id, :autor, :added, :content)");
+	$sql = $conn->prepare("INSERT INTO comment (id, autor, content, where_is, where_id)
+								VALUES (:id, :autor, :content, :where_is, :where_id)");
 	$sql->bindValue(':id', $id);
 	$sql->bindValue(':autor', $autor);
-	$sql->bindValue(':added', $added);
 	$sql->bindValue(':content', $content);
+	$sql->bindValue(':where_is', $where_is);
+	$sql->bindValue(':where_id', $where_id);
 	$sql->execute();
-	echo "Komentarz został dodany";
+	//echo "Komentarz został dodany";
 }
 
 function add_person($nickname, $name, $lastname, $email, $age){ //działa

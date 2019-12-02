@@ -4,13 +4,13 @@ $conn = connect();
 $stmt = $conn->prepare("SELECT * FROM person WHERE nickname=:nickname");
 $nick = urldecode($_GET["nickname"]);
 $nick = substr($nick, 0, -1);
-$stmt->bindValue(":nickname", $nick, PDO::PARAM_INT);
+$stmt->bindValue(":nickname", $nick, PDO::PARAM_STR);
 $stmt->execute();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $details = $rows[0];
 
 $stmt = $conn->prepare("SELECT * FROM picture WHERE autor=:nickname");
-$stmt->bindValue(":nickname", $details['nickname'], PDO::PARAM_INT);
+$stmt->bindValue(":nickname", $details['nickname'], PDO::PARAM_STR);
 $stmt->execute();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $images = $rows[0];

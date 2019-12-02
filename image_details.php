@@ -1,17 +1,58 @@
 <?php
 require_once('database.php');
 $conn = connect();
+//tymczasowow
+$conn = connect();
+$stmt = $conn->prepare("SELECT nickname FROM person");
+$stmt->execute();
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$autors = $rows;
+
 $stmt = $conn->prepare("SELECT * FROM picture WHERE id=:id");
 $stmt->bindValue(":id", $_GET["id"], PDO::PARAM_INT);
 $stmt->execute();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $details = $rows[0];
 
-$stmt = $conn->prepare("SELECT * FROM comment WHERE id=:id");
-$stmt->bindValue(":id", $details['comments'], PDO::PARAM_INT);
-$stmt->execute();
-$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-$comments = $rows[0];
+
+if($details['comments'] != 0){
+    $stmt = $conn->prepare("SELECT * FROM comment WHERE where_is='picture' AND where_id=:where_id");
+    $stmt->bindValue(":where_id", $details['id'], PDO::PARAM_INT);
+    $stmt->execute();
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $comments = $rows[0];
+}
+
+$content = $contentErr ="";
+//do formy dodawania komentarza
+if ($_SERVER["REQUEST_METHOD"] == "POST"){
+    $autor = check_input($_POST["autor"]);
+
+    if (empty($_POST["content"])) {
+        $contentErr = "Nie możesz dodać pustego komentarza";
+        $check = false;
+    } else {
+        $content = check_input($_POST["content"]);
+        $check = true;
+    }
+
+    if($check){
+        $stmt = $conn->prepare("UPDATE picture SET comments=:number_of_comments WHERE id=:id");
+        $stmt->bindValue(":number_of_comments", $details['comments']+1, PDO::PARAM_INT);
+        $stmt->bindValue(":id", $details['id'], PDO::PARAM_INT);
+        $stmt->execute();
+        add_comment(NULL, $autor, $content, 'picture', $details['id']);
+        $content = "";
+    }
+    else echo "Nie udało się dodać twojego komnetarza";
+
+}
+function check_input($data) {
+  $data = trim($data);
+  $data = stripslashes($data);
+  $data = htmlspecialchars($data);
+  return $data;
+}
 
 ?>
 
@@ -122,7 +163,7 @@ $comments = $rows[0];
             <div style='color: black; font-size: 50px; font-weight: bold;'><?php echo $details['name'];?> </div>
             <!-- /*echo '<p style="color: black">".$details['name']."</p>';*/ --> 
             <?php echo "<img src='".$details['image']."' />"; ?> <!-- póżniej zmienszyć rozmier obrazka -->
-            <table class="table table-striped">
+            <table style="padding-top: 10px;" class="table table-striped">
               <tbody>
                 <tr>
                   <th>Autor</th>
@@ -147,48 +188,55 @@ $comments = $rows[0];
                       <td><?php echo $details['tags'];?> <!-- to w pętli bo będzie więcej, na razie jest tylko jeden --></td>
                     </tr>
                 <?php endif; ?>
-
-                <?php if(is_null($details['comments'])): ?>
-                <tr> 
-                    <td colspan="2">Brak komentarzy</td>
-                </tr>
-                <?php else: ?>
-                <tr>
-                  <th>Komentarze</th>
-                  <!-- <td>
-                    <table>
-                        <tbody>
-                            <td>
-                                <?php echo $comments['autor'];
-                                      echo "       ";
-                                      echo $comments['added']; //tego czcionkę zmienić pewnie będzie lepiej
-                                ?>
-                            </td>
-                            <td>
-                                <?php echo $comments['content'];?>
-                            </td>
-                        </tbody>
-                    </table>
-                  </td> -->
-                  <td><?php echo $comments['autor']; //zmienjszyć czcionkę tego i daty dodania
-                            echo "&emsp;&emsp;"; // "/t" tylko działające
-                            echo "Data dodania: ".$comments['added'];
-                            echo "<br>";
-                            echo $comments['content'];?> <!-- to w pętli wyswietlać komentarze, może zrobić dla nich osobną tabelę, albo jeszcze coś innego --></td>
-                </tr>
-                <?php endif; ?>
               </tbody>
             </table>  
-        </div>
-        <!-- ================= comments ==================== -->
-        <div>
-            <!-- No to tak,
-            tutaj miejsce na napisanie komentarza,
-            i jakiś przycisk submit, i po tym, 
-            albo strona się odświeża, 
-            albo jakaś "animacja" dodawania,
-            w każdym razie coś ogarnąć...
-            -->
+            <!-- dodać tagi osobno, ale to później -->
+            <!-- ================= comments ==================== -->
+            <?php if($details['comments'] == 0): ?>
+                <h4>Brak komentarzy</h4>
+            <?php else: ?>
+                <h4>Komentarze:</h4>
+                <table class="table table-striped">
+                    <tbody>
+                        <?php foreach($rows as $row): ?>
+                            <tr>
+                                <td>
+                                    <?php echo $row['autor']; //zmienjszyć czcionkę tego i daty dodania
+                                          echo "<br>";
+                                          echo $row['added']; //"Data dodania: "
+                                          ?>
+                                </td>
+                                <td style="padding-left: 35px;">
+                                    <?php echo $row['content'];?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+
+        
+            <!-- ================= adding comments ==================== -->
+            <div>
+                <!-- No to tak,
+                tutaj miejsce na napisanie komentarza,
+                i jakiś przycisk submit, i po tym, 
+                albo strona się odświeża, 
+                albo jakaś "animacja" dodawania,
+                w każdym razie coś ogarnąć...
+                -->
+                <h5>Dodaj komentarz: </h5>
+                <form method="post">
+                    Kto(tymczasowo): <select name="autor" >
+                        <?php foreach ($autors as $autor): ?>
+                           <option value=<?php echo $autor['nickname']; ?>> <?php echo $autor['nickname']; ?> </option>
+                        <?php endforeach; ?>
+                    </select><br>
+                    Kometarz: <textarea name="content"><?php echo $content;?></textarea><span class="error"><?php echo $contentErr;?></span><br>
+                    <input type="submit" class="button" name="submit" value="Dodaj komentarz">  
+                </form>
+
+            </div>
         </div>
 <!--=================== content body end ====================-->
 
