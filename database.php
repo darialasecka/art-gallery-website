@@ -27,7 +27,7 @@ function add_tag($slug){ //działa
 	echo "Tag został dodany";
 }
 
-function add_comment($id, $autor, $content, $where_is, $where_id){ //z tego co widziałam w bazie danych, to też działa
+function add_comment($id, $autor, $content, $where_is, $where_id){ //działa
 	$conn = connect();
 	$sql = $conn->prepare("INSERT INTO comment (id, autor, content, where_is, where_id)
 								VALUES (:id, :autor, :content, :where_is, :where_id)");
@@ -68,7 +68,7 @@ function add_picture($id, $image, $name, $autor, $tags, $comments, $description)
 	echo "Obraz został dodany";
 }
 
-function add_gallery($id, $name, $person, $pictures, $created, $latest_update, $tags, $comments, $description){
+function add_gallery($id, $name, $person, $pictures, $created, $latest_update, $tags, $comments, $description){ //jeszcze nie testowane
 	$conn = connect();
 	$sql = $conn->prepare("INSERT INTO gallery (id, name, person, pictures, created, latest_update, tags, comments, description)
 							VALUES (:id, :name, :person, :pictures, :created, :latest_update, :tags, :comments, :description)");

@@ -35,7 +35,7 @@ if ($details['comments'] == true) {
 }
 
 //do formy dodawania komentarza
-$content = $contentErr ="";
+$autor = $content = $contentErr ="";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $autor = check_input($_POST["autor"]);
     $check = false;
@@ -60,6 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $check = false;
     }
     else echo "Nie udało się dodać twojego komnetarza";
+    $content = "";
 
 }
 function check_input($data) {
@@ -75,6 +76,21 @@ function check_input($data) {
 <html lang="pl">
 <head>
     <?php head("Obraz"); ?>
+
+    <style>
+        .pb-cmnt-textarea {
+            resize: none;
+            padding: 10px;
+            /*height: 130px;*/
+            width: 100%;
+            border: 1px solid #F2F2F2;
+        }
+
+        .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+            background-color: #1f1f1f!important; 
+        }
+
+    </style>
 </head>
 <body>
 <div class="loader">
@@ -127,7 +143,7 @@ function check_input($data) {
                     <?php 
                     foreach($tags as $tag){
                         echo $tag['tag_slug']."&emsp;"; 
-                        /*$counter++; <-- chyba zbędne, bo "p" samo powinno ogarąć, że powinna być owa linia
+                        /*$counter++; <-- chyba zbędne, bo "p" samo powinno ogarąć, że powinna być nowa linia
                         if ($counter >= 20){
                             echo "<br>";
                             $counter = 0;    
@@ -141,34 +157,8 @@ function check_input($data) {
                             } ?> -->
                     <!--  <td><?php echo $details['tags'];?> to w pętli bo będzie więcej, na razie jest tylko jeden</td> -->
             <?php endif; ?>
-
-            <!-- ================= comments ==================== -->
-            <?php if($details['comments'] == false): ?>
-                <h4>Brak komentarzy</h4>
-            <?php else: ?>
-                <h4>Komentarze:</h4>
-                <table class="table table-striped">
-                    <tbody>
-                        <?php foreach($rows as $row): ?>
-                            <tr>
-                                <td style="font-size: 12px;">
-                                    <a style="font-size: 18px;" href="/profile_page.php?nickname=<?php echo urlencode($row['autor']) ?>/"><?php echo $row['autor']; //powiększyć czcionkę później?></a>
-                                    <?php echo "<br>";
-                                          echo $row['added']; //"Data dodania: "
-                                          ?>
-                                </td>
-                                <td style="padding-left: 35px;">
-                                    <?php echo $row['content'];?>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            <?php endif; ?>
-
-        
             <!-- ================= adding comments ==================== -->
-            <div>
+            <!-- <div>
                 <h5>Dodaj komentarz: </h5>
                 <form method="post">
                     Kto(tymczasowo): <select name="autor" >
@@ -179,8 +169,58 @@ function check_input($data) {
                     Kometarz: <textarea name="content"><?php echo $content;?></textarea><span class="error"><?php echo $contentErr;?></span><br>
                     <input type="submit" class="button" name="submit" value="Dodaj komentarz">  
                 </form>
+            </div> -->
+            <h5>Dodaj komentarz: </h5>
+            <div class="container pb-cmnt-container">
+                <form method="post">
+                Kto(tymczasowo):
+                <select name="autor" >
+                    <?php foreach ($autors as $autor): ?>
+                       <option value=<?php echo $autor['nickname']; ?>> <?php echo $autor['nickname']; ?> </option>
+                    <?php endforeach; ?>
+                </select>
+                <!-- </form> -->
+                <div class="row justify-content-between">
+                    <div class="col-md-12 col-md-offset-6">
+                        <div class="panel panel-info">
+                            <div class="panel-body">
+                                <textarea style="font-size: 18px;" placeholder="Dodaj komentarz" class="pb-cmnt-textarea" name="content"><?php echo $content;?></textarea>
+                                <span class="error"><?php echo $contentErr;?></span>
+                                <div class="form-inline justify-content-end" method="post">
+                                    <button class="btn-sm btn-dark btn-primary float-xs-right text-white" type="submit" name="submit">Dodaj</button>
+                                </div></form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+            <!-- ================= adding comments end / comments ==================== -->
+            <?php if($details['comments'] == false): ?>
+                <h4>Brak komentarzy</h4>
+            <?php else: ?>
+                <h4>Komentarze:</h4>
+                <div class="container pb-cmnt-container">
+                    <table class="table table-striped">
+                        <tbody>
+                            <?php foreach($rows as $row): ?>
+                                <tr>
+                                    <td style="font-size: 12px;">
+                                        <a style="font-size: 18px;" href="/profile_page.php?nickname=<?php echo urlencode($row['autor']) ?>/"><?php echo $row['autor']; //powiększyć czcionkę później?></a>
+                                        <?php echo "<br>";
+                                              echo $row['added']; //"Data dodania: "
+                                              ?>
+                                    </td>
+                                    <td style="padding-left: 35px;">
+                                        <?php echo $row['content'];?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+            <!-- ===================== commets end ====================== -->
+        
 <!--=================== content body end ====================-->
 
 
