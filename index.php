@@ -66,17 +66,17 @@ $images = $rows[0];
                         </a>
                     </li>
                     <li>
-                        <a href="portfolio.html">
+                        <a href="index.php">
                             Twój profil
                         </a>
                     </li>
                     <li>
-                        <a href="about.html">
+                        <a href="index.php">
                             O nas
                         </a>
                     </li>
                     <li>
-                        <a href="contact.html">
+                        <a href="index.php">
                             Kontakt
                         </a>
                     </li>
@@ -112,12 +112,12 @@ $images = $rows[0];
                             <a href="#"> <i class="ion ion-social-twitter"></i> </a>
                         </li>
                         <li>
-                            <a href="#"> <i class="ion ion-social-dribbble"></i> </a>
+                            <a href="#"> <i class="ion ion-social-github"></i> </a>
                         </li>
                     </ul>
                     <div class="copy_right">
                         <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                        <p class="copyright">Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a></p>
+                        <p class="copyright">Copyright &copy;<script>document.write(new Date().getFullYear());</script><br> All rights reserved <br> This template is made by <a href="https://colorlib.com" target="_blank">Colorlib</a></p>
                         <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                     </div>
                 </div>

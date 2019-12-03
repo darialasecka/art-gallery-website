@@ -14,8 +14,18 @@ $stmt->execute();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $details = $rows[0];
 
+if ($details['tags'] == true) {
+    $stmt = $conn->prepare("SELECT * FROM tag_where WHERE where_is='picture' AND where_id=:where_id");
+    $stmt->bindValue(":where_id", $details["id"], PDO::PARAM_INT);
+    $stmt->execute();
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $tags = $rows;
+    /*$count_tags = count($tags); <-- na razie chyba zbędne
+    $counter = 0;*/
+}
 
-if($details['comments'] != 0){
+
+if ($details['comments'] == true) {
     $stmt = $conn->prepare("SELECT * FROM comment WHERE where_is='picture' AND where_id=:where_id");
     $stmt->bindValue(":where_id", $details['id'], PDO::PARAM_INT);
     $stmt->execute();
@@ -23,10 +33,11 @@ if($details['comments'] != 0){
     $comments = $rows[0];
 }
 
-$content = $contentErr ="";
 //do formy dodawania komentarza
-if ($_SERVER["REQUEST_METHOD"] == "POST"){
+$content = $contentErr ="";
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $autor = check_input($_POST["autor"]);
+    $check = false;
 
     if (empty($_POST["content"])) {
         $contentErr = "Nie możesz dodać pustego komentarza";
@@ -36,13 +47,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
         $check = true;
     }
 
-    if($check){
-        $stmt = $conn->prepare("UPDATE picture SET comments=:number_of_comments WHERE id=:id");
-        $stmt->bindValue(":number_of_comments", $details['comments']+1, PDO::PARAM_INT);
-        $stmt->bindValue(":id", $details['id'], PDO::PARAM_INT);
-        $stmt->execute();
+    if ($check) {
+        if ($details['comments'] == false) {
+            $stmt = $conn->prepare("UPDATE picture SET comments=:comments WHERE id=:id");
+            $stmt->bindValue(":comments", true, PDO::PARAM_INT);
+            $stmt->bindValue(":id", $details['id'], PDO::PARAM_INT);
+            $stmt->execute();
+        }
         add_comment(NULL, $autor, $content, 'picture', $details['id']);
         $content = "";
+        $check = false;
     }
     else echo "Nie udało się dodać twojego komnetarza";
 
@@ -143,12 +157,12 @@ function check_input($data) {
                             <a href="#"> <i class="ion ion-social-twitter"></i> </a>
                         </li>
                         <li>
-                            <a href="#"> <i class="ion ion-social-dribbble"></i> </a>
+                            <a href="#"> <i class="ion ion-social-github"></i> </a>
                         </li>
                     </ul>
                     <div class="copy_right">
                         <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                        <p class="copyright">Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a></p>
+                        <p class="copyright">Copyright &copy;<script>document.write(new Date().getFullYear());</script><br> All rights reserved <br> This template is made by <a href="https://colorlib.com" target="_blank">Colorlib</a></p>
                         <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                     </div>
                 </div>
@@ -182,17 +196,35 @@ function check_input($data) {
                   <th>Opis</th>
                   <td><?php echo $details['description'];?></td>
                 </tr>
-                <?php if(!is_null($details['tags'])): ?>
-                    <tr>
-                      <th>Tagi</th>
-                      <td><?php echo $details['tags'];?> <!-- to w pętli bo będzie więcej, na razie jest tylko jeden --></td>
-                    </tr>
-                <?php endif; ?>
               </tbody>
             </table>  
+            <!-- ================== tags ================== -->
             <!-- dodać tagi osobno, ale to później -->
+            <?php if($details['tags'] == false): ?>
+                <h4>Brak tagów</h4>
+            <?php else: ?>
+                <h4>Tagi</h4>
+                <p style="font-size: 15px; text-align: left;">
+                    <?php 
+                    foreach($tags as $tag){
+                        echo $tag['tag_slug']."&emsp;"; 
+                        /*$counter++; <-- chyba zbędne, bo "p" samo powinno ogarąć, że powinna być owa linia
+                        if ($counter >= 20){
+                            echo "<br>";
+                            $counter = 0;    
+                        }*/
+                    } ?>
+                </p>
+                        <!-- <?php $counter++; 
+                            if ($counter >= 10){
+                                echo "<br>";
+                                $counter = 0;    
+                            } ?> -->
+                    <!--  <td><?php echo $details['tags'];?> to w pętli bo będzie więcej, na razie jest tylko jeden</td> -->
+            <?php endif; ?>
+
             <!-- ================= comments ==================== -->
-            <?php if($details['comments'] == 0): ?>
+            <?php if($details['comments'] == false): ?>
                 <h4>Brak komentarzy</h4>
             <?php else: ?>
                 <h4>Komentarze:</h4>
@@ -200,9 +232,9 @@ function check_input($data) {
                     <tbody>
                         <?php foreach($rows as $row): ?>
                             <tr>
-                                <td>
-                                    <?php echo $row['autor']; //zmienjszyć czcionkę tego i daty dodania
-                                          echo "<br>";
+                                <td style="font-size: 12px;">
+                                    <a style="font-size: 18px;" href="/profile_page.php?nickname=<?php echo urlencode($row['autor']) ?>/"><?php echo $row['autor']; //powiększyć czcionkę później?></a>
+                                    <?php echo "<br>";
                                           echo $row['added']; //"Data dodania: "
                                           ?>
                                 </td>
@@ -218,13 +250,6 @@ function check_input($data) {
         
             <!-- ================= adding comments ==================== -->
             <div>
-                <!-- No to tak,
-                tutaj miejsce na napisanie komentarza,
-                i jakiś przycisk submit, i po tym, 
-                albo strona się odświeża, 
-                albo jakaś "animacja" dodawania,
-                w każdym razie coś ogarnąć...
-                -->
                 <h5>Dodaj komentarz: </h5>
                 <form method="post">
                     Kto(tymczasowo): <select name="autor" >
@@ -235,7 +260,6 @@ function check_input($data) {
                     Kometarz: <textarea name="content"><?php echo $content;?></textarea><span class="error"><?php echo $contentErr;?></span><br>
                     <input type="submit" class="button" name="submit" value="Dodaj komentarz">  
                 </form>
-
             </div>
         </div>
 <!--=================== content body end ====================-->
