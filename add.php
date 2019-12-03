@@ -36,7 +36,7 @@ function head($title){
 function logo_main_menu(){
 	echo "<!--logo -->
         <div class='logo_box'>
-            <a href='#'>
+            <a href='index.php'>
                 <h1 style='color: white'><b>Galeria<br>Obrazów</b></h1>
             </a>
         </div>

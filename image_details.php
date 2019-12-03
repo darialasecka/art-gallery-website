@@ -81,13 +81,18 @@ function check_input($data) {
         .pb-cmnt-textarea {
             resize: none;
             padding: 10px;
-            /*height: 130px;*/
             width: 100%;
             border: 1px solid #F2F2F2;
         }
 
         .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
             background-color: #1f1f1f!important; 
+        }
+        .pb-cmnt-container{
+            padding-top: 10px;
+        }
+        .table-striped{
+            margin-top: 10px;
         }
 
     </style>
@@ -112,7 +117,7 @@ function check_input($data) {
             <div style='color: black; font-size: 50px; font-weight: bold;'><?php echo $details['name'];?> </div>
             <!-- /*echo '<p style="color: black">".$details['name']."</p>';*/ --> 
             <?php echo "<img src='".$details['image']."' />"; ?> <!-- póżniej zmienszyć rozmier obrazka -->
-            <table style="padding-top: 10px;" class="table table-striped">
+            <table class="table table-striped">
               <tbody>
                 <tr>
                   <th>Autor</th>
@@ -136,20 +141,22 @@ function check_input($data) {
             <!-- ================== tags ================== -->
             <!-- dodać tagi osobno, ale to później -->
             <?php if($details['tags'] == false): ?>
-                <h4>Brak tagów</h4>
+                <h5>Brak tagów</h5>
             <?php else: ?>
-                <h4>Tagi</h4>
-                <p style="font-size: 15px; text-align: left;">
-                    <?php 
-                    foreach($tags as $tag){
-                        echo $tag['tag_slug']."&emsp;"; 
-                        /*$counter++; <-- chyba zbędne, bo "p" samo powinno ogarąć, że powinna być nowa linia
-                        if ($counter >= 20){
-                            echo "<br>";
-                            $counter = 0;    
-                        }*/
-                    } ?>
-                </p>
+                <h5>Tagi</h5>
+                <div class="container pb-cmnt-container">
+                    <p style="font-size: 15px; text-align: left;">
+                        <?php 
+                        foreach($tags as $tag){
+                            echo $tag['tag_slug']."&emsp;"; 
+                            /*$counter++; <-- chyba zbędne, bo "p" samo powinno ogarąć, że powinna być nowa linia
+                            if ($counter >= 20){
+                                echo "<br>";
+                                $counter = 0;    
+                            }*/
+                        } ?>
+                    </p>
+                </div>
                         <!-- <?php $counter++; 
                             if ($counter >= 10){
                                 echo "<br>";
