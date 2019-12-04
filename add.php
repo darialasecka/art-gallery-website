@@ -143,4 +143,6 @@ function scripts(){
 		<!-- Custom js -->
 		<script src='assets/js/main.js'></script>";
 }
+
+//C:\xampp\htdocs\assets\bootstrap-tagsinput-latest
 ?>

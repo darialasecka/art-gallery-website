@@ -139,7 +139,6 @@ function check_input($data) {
               </tbody>
             </table>  
             <!-- ================== tags ================== -->
-            <!-- dodać tagi osobno, ale to później -->
             <?php if($details['tags'] == false): ?>
                 <h5>Brak tagów</h5>
             <?php else: ?>
@@ -156,13 +155,7 @@ function check_input($data) {
                             }*/
                         } ?>
                     </p>
-                </div>
-                        <!-- <?php $counter++; 
-                            if ($counter >= 10){
-                                echo "<br>";
-                                $counter = 0;    
-                            } ?> -->
-                    <!--  <td><?php echo $details['tags'];?> to w pętli bo będzie więcej, na razie jest tylko jeden</td> -->
+                </div>    
             <?php endif; ?>
             <!-- ================= adding comments ==================== -->
             <!-- <div>
