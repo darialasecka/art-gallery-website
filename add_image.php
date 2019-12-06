@@ -2,33 +2,70 @@
 require_once('database.php');
 require_once('add.php');
 $conn = connect();
-$stmt = $conn->prepare("SELECT * FROM picture");
+/*$stmt = $conn->prepare("SELECT * FROM picture");
 $stmt->execute();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $images = $rows[0];
+*/
 
+$stmt = $conn->prepare("SELECT nickname FROM person");
+$stmt->execute();
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$autors = $rows;
 //https://www.php.net/manual/en/function.copy.php <- kopiowanie obrazu
+$stmt = $conn->prepare("SELECT slug FROM tag");
+$stmt->execute();
+$db_tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 if(isset($_POST["insert"]))  
  {  
       $file = addslashes(file_get_contents($_FILES["image"]["tmp_name"]));   
-      echo '<script>alert("Image Inserted into Database")</script>';  
+      //echo '<script>alert("Image Inserted into Database")</script>';  
  }  
 
-$title = $description = ""
+$title = $description = $tags = "";
 //do formy dodawania komentarza, przerobić na dodawanie obrazu
-/*$autor = $content = $contentErr ="";
+$autor = "";
+/* https://github.com/niczak/PHP-Sanitize-Post/blob/master/sanitize.php */
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $autor = check_input($_POST["autor"]);
+    $title = check_input($_POST["title"]);
+    $description = check_input($_POST["description"]);
+    $tags = $_POST["hidden-tags"];
     $check = false;
+    $image_name = $_FILES["image"]["name"];
 
-    if (empty($_POST["content"])) {
-        $contentErr = "Nie możesz dodać pustego komentarza";
-        $check = false;
+    if ($_FILES["image"]["error"] > 0) {
+      echo "Error: " . $_FILES["image"]["error"] . "<br />";
     } else {
-        $content = check_input($_POST["content"]);
-        $check = true;
+        //echo "Upload: " . $image_name . "<br />";
+        $path = "http://localhost/img/".$image_name;
+        echo $path;//to jest te path jak url, więc go można "wrzucić" do bay danych i bedzie wyświetlal obraz
+        /*if(strpos($_FILES["image"]["type"], "image/") !== false){ //Można zostawić dla pewności, ale accept to ogarnia
+            echo "Poprawny";
+        } else {
+            echo "Nie poprawny";
+        }*/
+        //echo "Size: " . ($_FILES["image"]["size"] / 1024) . " Kb<br />";
+        //echo "Stored in: " . $_FILES["image"]["tmp_name"]. "<br />"; //w jakimś dziwnym temp jest
     }
+
+    echo $autor. "<br />";
+    echo $title. "<br />";
+    echo $description. "<br />";
+    $db_list_of_tags = [];
+    foreach ($db_tags as $tag) {
+        //echo $tag['slug'];
+        array_push($db_list_of_tags, $tag['slug']);
+    }
+    echo "Tagi:".$tags. "<br />";
+    $list_of_tags = explode(",",$tags);
+    foreach ($list_of_tags as $tag) {
+        $tag = check_input($tag);
+        if(in_array($tag, $db_list_of_tags)) echo "jest";//to tylko zupdejtowac tag_where
+        else echo "nie ma";//jeślni nie to też dodać do tags
+    }//dorobić dodawanie do bazy danych
+    /*
 
     if ($check) {
         if ($details['comments'] == false) {
@@ -42,15 +79,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $check = false;
     }
     else echo "Nie udało się dodać twojego komnetarza";
-    $content = "";
+    $content = "";*/
 
 }
-function check_input($data) {
-  $data = trim($data);
-  $data = stripslashes($data);
-  $data = htmlspecialchars($data);
-  return $data;
-}*/
 
 //echo "<img src='".$row['image']."' />";
 
@@ -77,7 +108,7 @@ function check_input($data) {
             background-color: #1f1f1f!important; 
         }
         .pb-cmnt-container{
-            padding-top: 10px;
+            margin-bottom: 20px;
         }
 
     </style>
@@ -101,8 +132,9 @@ function check_input($data) {
         <div class="col-lg-10 col-md-9 col-12 body_block  align-content-center">
             <div class="container-fluid">
                 <!--===================  add image form start ====================-->
-                <div class="container" style="font-size: 18px; padding: 20px;">  
-                    <h2 align="center">Dodaj obraz</h2><br>  
+                <div style='color: black; font-size: 50px;'>Dodaj obraz</div>
+                <div class="container" style="font-size: 18px; padding: 20px;">
+
                     
                     <form method="post" enctype="multipart/form-data">  
                         <!-- <div class="custom-file">
@@ -112,9 +144,9 @@ function check_input($data) {
                         <!-- https://stackoverflow.com/questions/23738311/uploading-selected-picture-without-page-refresh -->
                         <!-- https://stackoverflow.com/questions/55037474/how-to-uploadand-visualization-images-without-refresh-page-in-php -->
                         <div class="custom-file">
-                            <input type="file" class="form-control-file" id="image" name="image" required>
+                            <input type="file" class="form-control-file" id="image" name="image" accept="image/png, image/jpeg, image/gif" required>
                         </div>
-                        <input type="title" class="form-control" id="title" placeholder="Tytuł" required value=<?php echo $title ?> >
+                        <input type="text" class="form-control" id="title" placeholder="Tytuł" name="title" required>
                         <textarea style="font-size: 18px;" placeholder="Dodaj opis (nie jest wymagany)" class="pb-cmnt-textarea form-control" name="description"><?php echo $description;?></textarea>
                         <!-- === https://bootstrap-tagsinput.github.io/bootstrap-tagsinput/examples/ === -->
                         <!-- === https://stackoverflow.com/questions/52454626/bootstrap-4-tags-input-add-tags-only-from-the-predefined-list === -->
@@ -136,6 +168,14 @@ function check_input($data) {
                         <div class="form-inline justify-content-end" method="post">
                             <button class="btn-sm btn-dark btn-primary float-xs-right text-white" type="submit" name="insert">Dodaj</button>
                         </div>
+
+                        Kto(tymczasowo):
+                        <select name="autor" >
+                            <?php foreach ($autors as $autor): ?>
+                               <option value=<?php echo $autor['nickname']; ?>> <?php echo $autor['nickname']; ?> </option>
+                            <?php endforeach; ?>
+                        </select>
+
                     </form>
 
                     <br>  

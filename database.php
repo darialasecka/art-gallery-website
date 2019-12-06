@@ -17,7 +17,17 @@ function connect() { //działa
 	}
 	return $pdo;
 }
+//security function xd
+function check_input($data) {
+	$data = trim($data);
+	$data = stripslashes($data);
+	$data = htmlspecialchars($data);
+	return $data;
+}
 
+
+
+//adding to database functions
 function add_tag($slug){ //działa
 	$conn = connect();
 	$sql = $conn->prepare("INSERT INTO tag (slug)
@@ -53,16 +63,15 @@ function add_person($nickname, $name, $lastname, $email, $age){ //działa
 	echo "Osoba została dodana";
 }
 
-function add_picture($id, $image, $name, $autor, $tags, $comments, $description){ //działa, ale ścieżkę trzeba śmiesznie dodawać xd
+function add_picture($id, $image, $name, $autor, $tags, $description){ //działa, ale ścieżkę trzeba śmiesznie dodawać xd
 	$conn = connect();
-	$sql = $conn->prepare("INSERT INTO picture (id, image, name, autor, tags, comments, description )
-								VALUES (:id, :image, :name, :autor, :tags, :comments, :description)");
+	$sql = $conn->prepare("INSERT INTO picture (id, image, name, autor, tags, description )
+								VALUES (:id, :image, :name, :autor, :tags, :description)");
 	$sql->bindValue(':id', $id);
 	$sql->bindValue(':image', $image);
 	$sql->bindValue(':name', $name);
 	$sql->bindValue(':autor', $autor);
 	$sql->bindValue(':tags', $tags);
-	$sql->bindValue(':comments', $comments);
 	$sql->bindValue(':description', $description);
 	$sql->execute();
 	echo "Obraz został dodany";

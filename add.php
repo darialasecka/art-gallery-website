@@ -56,6 +56,11 @@ function logo_main_menu(){
                     </a>
                 </li>
                 <li>
+                    <a href='add_image.php'>
+                        Dodaj obraz
+                    </a>
+                </li>
+                <li>
                     <a href='index.php'>
                         O nas
                     </a>
@@ -63,6 +68,11 @@ function logo_main_menu(){
                 <li>
                     <a href='index.php'>
                         Kontakt
+                    </a>
+                </li>
+                <li>
+                    <a href='register.php'>
+                        Rejestracja
                     </a>
                 </li>
             </ul>

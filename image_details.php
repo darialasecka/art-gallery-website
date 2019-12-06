@@ -6,8 +6,7 @@ $conn = connect();
 $conn = connect();
 $stmt = $conn->prepare("SELECT nickname FROM person");
 $stmt->execute();
-$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-$autors = $rows;
+$autors = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $stmt = $conn->prepare("SELECT * FROM picture WHERE id=:id");
 $stmt->bindValue(":id", $_GET["id"], PDO::PARAM_INT);
@@ -19,8 +18,7 @@ if ($details['tags'] == true) {
     $stmt = $conn->prepare("SELECT * FROM tag_where WHERE where_is='picture' AND where_id=:where_id");
     $stmt->bindValue(":where_id", $details["id"], PDO::PARAM_INT);
     $stmt->execute();
-    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $tags = $rows;
+    $tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
     /*$count_tags = count($tags); <-- na razie chyba zbędne
     $counter = 0;*/
 }
@@ -59,16 +57,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $content = "";
         $check = false;
     }
-    else echo "Nie udało się dodać twojego komnetarza";
+    //else echo "Nie udało się dodać twojego komnetarza";
     $content = "";
 
 }
-function check_input($data) {
+/*function check_input($data) {
   $data = trim($data);
   $data = stripslashes($data);
   $data = htmlspecialchars($data);
   return $data;
-}
+}*/
 
 ?>
 
@@ -89,7 +87,7 @@ function check_input($data) {
             background-color: #1f1f1f!important; 
         }
         .pb-cmnt-container{
-            padding-top: 10px;
+            margin-bottom: 20px;
         }
         .table-striped{
             margin-top: 10px;
@@ -114,115 +112,120 @@ function check_input($data) {
 
         <!--=================== content body ====================-->
         <div class="col-lg-10 col-md-9 col-12 body_block  align-content-center">
-            <div style='color: black; font-size: 50px; font-weight: bold;'><?php echo $details['name'];?> </div>
-            <!-- /*echo '<p style="color: black">".$details['name']."</p>';*/ --> 
-            <?php echo "<img src='".$details['image']."' />"; ?> <!-- póżniej zmienszyć rozmier obrazka -->
-            <table class="table table-striped">
-              <tbody>
-                <tr>
-                  <th>Autor</th>
-                    <td>
-                        <a  style="font-size: 19px;" href="/profile_page.php?nickname=<?php echo urlencode($details['autor']) ?>/"><?php echo $details['autor']; //powiększyć czcionkę później?></a>
-                    <!-- <?php 
-                    echo '<a href="/profile_page.php?nickname='.urlencode($details['autor']).'/">'.$details['autor'].'</a>';
-                    //echo '<a href="/profile_page.php?nickname='.$details['autor'].'/>Nic</a>'; 
-                    ?> -->
+            <div class="container-fluid">
+                <!--===================  image details start ====================-->
+                <div style='color: black; font-size: 50px;'><?php echo $details['name'];?> </div>
+                <!-- /*echo '<p style="color: black">".$details['name']."</p>';*/ --> 
+                <?php echo "<img src='".$details['image']."' />"; ?> <!-- póżniej zmienszyć rozmier obrazka -->
+                <table class="table table-striped" style="padding-top: 10px;">
+                  <tbody>
+                    <tr>
+                      <th>Autor</th>
+                        <td>
+                            <a  style="font-size: 19px;" href="/profile_page.php?nickname=<?php echo urlencode($details['autor']) ?>/"><?php echo $details['autor']; //powiększyć czcionkę później?></a>
+                        <!-- <?php 
+                        echo '<a href="/profile_page.php?nickname='.urlencode($details['autor']).'/">'.$details['autor'].'</a>';
+                        //echo '<a href="/profile_page.php?nickname='.$details['autor'].'/>Nic</a>'; 
+                        ?> -->
 
-                    <!-- <?php echo $details['autor'];?> -->
-                      
-                  </td>
-                </tr>
-                <tr>
-                  <th>Opis</th>
-                  <td><?php echo $details['description'];?></td>
-                </tr>
-              </tbody>
-            </table>  
-            <!-- ================== tags ================== -->
-            <?php if($details['tags'] == false): ?>
-                <h5>Brak tagów</h5>
-            <?php else: ?>
-                <h5>Tagi</h5>
-                <div class="container pb-cmnt-container">
-                    <p style="font-size: 15px; text-align: left;">
-                        <?php 
-                        foreach($tags as $tag){
-                            echo $tag['tag_slug']."&emsp;"; 
-                            /*$counter++; <-- chyba zbędne, bo "p" samo powinno ogarąć, że powinna być nowa linia
-                            if ($counter >= 20){
-                                echo "<br>";
-                                $counter = 0;    
-                            }*/
-                        } ?>
-                    </p>
-                </div>    
-            <?php endif; ?>
-            <!-- ================= adding comments ==================== -->
-            <!-- <div>
+                        <!-- <?php echo $details['autor'];?> -->
+                          
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Opis</th>
+                      <td><?php echo $details['description'];?></td>
+                    </tr>
+                  </tbody>
+                </table>  
+                <!-- ================== tags ================== -->
+                <?php if($details['tags'] == false): ?>
+                    <h5>Brak tagów</h5>
+                <?php else: ?>
+                    <h5>Tagi</h5>
+                    <div class="container pb-cmnt-container">
+                        <p style="font-size: 15px; text-align: left;">
+                            <?php 
+                            foreach($tags as $tag){
+                                echo $tag['tag_slug']."&emsp;"; 
+                                /*$counter++; <-- chyba zbędne, bo "p" samo powinno ogarąć, że powinna być nowa linia
+                                if ($counter >= 20){
+                                    echo "<br>";
+                                    $counter = 0;    
+                                }*/
+                            } ?>
+                        </p>
+                    </div>    
+                <?php endif; ?>
+                <!-- ================= adding comments ==================== -->
+                <!-- <div>
+                    <h5>Dodaj komentarz: </h5>
+                    <form method="post">
+                        Kto(tymczasowo): <select name="autor" >
+                            <?php foreach ($autors as $autor): ?>
+                               <option value=<?php echo $autor['nickname']; ?>> <?php echo $autor['nickname']; ?> </option>
+                            <?php endforeach; ?>
+                        </select><br>
+                        Kometarz: <textarea name="content"><?php echo $content;?></textarea><span class="error"><?php echo $contentErr;?></span><br>
+                        <input type="submit" class="button" name="submit" value="Dodaj komentarz">  
+                    </form>
+                </div> -->
                 <h5>Dodaj komentarz: </h5>
-                <form method="post">
-                    Kto(tymczasowo): <select name="autor" >
+                <div class="container pb-cmnt-container">
+                    <form method="post">
+                    Kto(tymczasowo):
+                    <select name="autor" >
                         <?php foreach ($autors as $autor): ?>
                            <option value=<?php echo $autor['nickname']; ?>> <?php echo $autor['nickname']; ?> </option>
                         <?php endforeach; ?>
-                    </select><br>
-                    Kometarz: <textarea name="content"><?php echo $content;?></textarea><span class="error"><?php echo $contentErr;?></span><br>
-                    <input type="submit" class="button" name="submit" value="Dodaj komentarz">  
-                </form>
-            </div> -->
-            <h5>Dodaj komentarz: </h5>
-            <div class="container pb-cmnt-container">
-                <form method="post">
-                Kto(tymczasowo):
-                <select name="autor" >
-                    <?php foreach ($autors as $autor): ?>
-                       <option value=<?php echo $autor['nickname']; ?>> <?php echo $autor['nickname']; ?> </option>
-                    <?php endforeach; ?>
-                </select>
-                <!-- </form> -->
-                <div class="row justify-content-between">
-                    <div class="col-md-12 col-md-offset-6">
-                        <div class="panel panel-info">
-                            <div class="panel-body">
-                                <textarea style="font-size: 18px;" placeholder="Dodaj komentarz" class="pb-cmnt-textarea" name="content"><?php echo $content;?></textarea>
-                                <span class="error"><?php echo $contentErr;?></span>
-                                <div class="form-inline justify-content-end" method="post">
-                                    <button class="btn-sm btn-dark btn-primary float-xs-right text-white" type="submit" name="submit">Dodaj</button>
-                                </div></form>
+                    </select>
+                    <!-- </form> -->
+                    <div class="row justify-content-between">
+                        <div class="col-md-12 col-md-offset-6">
+                            <div class="panel panel-info">
+                                <div class="panel-body">
+                                    <textarea style="font-size: 18px;" placeholder="Dodaj komentarz" class="pb-cmnt-textarea" name="content"><?php echo $content;?></textarea>
+                                    <span class="error" style="color: red;"><?php echo $contentErr;?></span>
+                                    <div class="form-inline justify-content-end" method="post">
+                                        <button class="btn-sm btn-dark btn-primary float-xs-right text-white" type="submit" name="submit">Dodaj</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    </form>
                 </div>
-            </div>
-            <!-- ================= adding comments end / comments ==================== -->
-            <?php if($details['comments'] == false): ?>
-                <h4>Brak komentarzy</h4>
-            <?php else: ?>
-                <h4>Komentarze:</h4>
-                <div class="container pb-cmnt-container">
-                    <table class="table table-striped">
-                        <tbody>
-                            <?php foreach($rows as $row): ?>
-                                <tr>
-                                    <td style="font-size: 12px;">
-                                        <a style="font-size: 18px;" href="/profile_page.php?nickname=<?php echo urlencode($row['autor']) ?>/"><?php echo $row['autor']; //powiększyć czcionkę później?></a>
-                                        <?php echo "<br>";
-                                              echo $row['added']; //"Data dodania: "
-                                              ?>
-                                    </td>
-                                    <td style="padding-left: 35px;">
-                                        <?php echo $row['content'];?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php endif; ?>
+                <!-- ================= adding comments end / comments ==================== -->
+                <?php if($details['comments'] == false): ?>
+                    <h4>Brak komentarzy</h4>
+                <?php else: ?>
+                    <h4>Komentarze:</h4>
+                    <div class="container pb-cmnt-container">
+                        <table class="table table-striped">
+                            <tbody>
+                                <?php foreach($rows as $row): ?>
+                                    <tr>
+                                        <td style="font-size: 12px;">
+                                            <a style="font-size: 18px;" href="/profile_page.php?nickname=<?php echo urlencode($row['autor']) ?>/"><?php echo $row['autor']; //powiększyć czcionkę później?></a>
+                                            <?php echo "<br>";
+                                                  echo $row['added']; //"Data dodania: "
+                                                  ?>
+                                        </td>
+                                        <td style="padding-left: 35px;">
+                                            <?php echo $row['content'];?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
             <!-- ===================== commets end ====================== -->
-        
-<!--=================== content body end ====================-->
-
+            </div>
+        </div>
+    <!--=================== content body end ====================-->
+    </div>
+</div>
 
 <?php scripts(); ?>
 </body>
