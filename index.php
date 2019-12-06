@@ -8,7 +8,6 @@ $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $images = $rows[0];
 
 //echo "<img src='".$row['image']."' />";
-
 ?>
 
 <!DOCTYPE html>

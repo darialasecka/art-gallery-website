@@ -14,7 +14,7 @@ $stmt = $conn->prepare("SELECT * FROM picture WHERE autor=:nickname");
 $stmt->bindValue(":nickname", $details['nickname'], PDO::PARAM_STR);
 $stmt->execute();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-$images = $rows[0];
+if($rows) $images = $rows[0];
 
 ?>
 
@@ -65,30 +65,34 @@ $images = $rows[0];
             </table>
 
             <div class="container-fluid">
-                <!--=================== main gallery start====================-->
-                <div class="grid img-container justify-content-center no-gutters">
-                    <?php foreach($rows as $row): ?> <!--pózniej dorobić jakieś skalowanie obrazków-->
-                    <a href="/image_details.php?id=<?php echo $row['id'] ?>/">
+                <!--=================== images gallery start====================-->
+                <?php if($rows): ?>
+                    <div class="grid img-container justify-content-center no-gutters">
+                        <?php foreach($rows as $row): ?> <!--pózniej dorobić jakieś skalowanie obrazków-->
+                        <a href="/image_details.php?id=<?php echo $row['id'] ?>/">
 
-                    <div class="grid-sizer col-sm-12 col-md-6 col-lg-3"></div>
-                        <div class="grid-item animals col-sm-12 col-md-6 col-lg-3">
-                            <div class="project_box_one">
-                                <?php echo "<img src='".$row['image']."' />"; ?>
-                                    <div class="product_info">
-                                        <div class="product_info_text">
-                                            <div class="product_info_text_inner">
-                                                <!--<i class="ion ion-plus"></i>-->
-                                                <h4><?php echo $row['name']; ?></h4>
+                        <div class="grid-sizer col-sm-12 col-md-6 col-lg-3"></div>
+                            <div class="grid-item animals col-sm-12 col-md-6 col-lg-3">
+                                <div class="project_box_one">
+                                    <?php echo "<img src='".$row['image']."' />"; ?>
+                                        <div class="product_info">
+                                            <div class="product_info_text">
+                                                <div class="product_info_text_inner">
+                                                    <!--<i class="ion ion-plus"></i>-->
+                                                    <h4><?php echo $row['name']; ?></h4>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    
-                    </a>
-                    <?php endforeach; ?>
-                </div>
-                <!--=================== main gallery end====================-->
+                        
+                        </a>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <p>Brak obrazów. <a style="font-size: 15px;" href="add_image.php">Dodaj swój pierwszy obraz.</a></p>
+                <?php endif; ?>
+                <!--=================== images gallery end====================-->
             </div>
             <!--=================== content body end ====================-->
         </div>

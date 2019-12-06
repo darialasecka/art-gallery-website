@@ -20,8 +20,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $lastname = check_input($_POST['lastname']);
   $email = check_input($_POST['email']);
   $age = check_input($_POST['age']);
-  $password_1 = check_input($_POST['password_1']);
-  $password_2 = check_input($_POST['password_2']);
+  $password_1 = $_POST['password_1'];//nie sprawdzm inputów, bo znaki specjalne powinny móc być w bazie danych, a jeśli nie to później ogarnę
+  $password_2 = $_POST['password_2'];
 
   if ($password_1 != $password_2){
     $pswr2Err = "Hasła sie nie zgadzają";
@@ -30,8 +30,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   // first check the database to make sure a user does not already exist with the same nickname and/or email
   $stmt = $conn->prepare("SELECT * FROM person WHERE nickname=:nickname OR email=:email LIMIT 1");
-  $stmt->bindValue(":nickname", $nickname, PDO::PARAM_INT);
-  $stmt->bindValue(":email", $email, PDO::PARAM_INT);
+  $stmt->bindValue(":nickname", $nickname, PDO::PARAM_STR);
+  $stmt->bindValue(":email", $email, PDO::PARAM_STR);
   $stmt->execute();
   $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
   $user = $rows;
@@ -49,15 +49,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   // Finally, register user if there are no errors in the form
   if ($check) {
-    $password = password_hash($password_1, PASSWORD_DEFAULT);//encrypt the password before saving in the database
-    echo $password_1."/=/".$password;
+    $password = password_hash($password_1, PASSWORD_DEFAULT); //encrypt the password before saving in the database
+    //add_person($nickname, $name, $lastname, $email, $age, $password){ //działa
+    add_person($nickname, $name, $lastname, $email, $age, $password);
     /*$query = "INSERT INTO users (nickname, email, password) 
           VALUES('$nickname', '$email', '$password')";
-    mysqli_query($db, $query);*/ //a razier nie chcemy wrzucać tego do bazy danych xd
+    mysqli_query($db, $query);*/ //a razie nie chcemy wrzucać tego do bazy danych xd
     $_SESSION['nickname'] = $nickname;
-    $_SESSION['success'] = "You are now logged in";
+    $_SESSION['success'] = "Jesteś zalogowany";
     $check = false;
-    //header('location: index.php');
+    header('location: index.php');//przekierowanie a stronę główną
   }
 }
 ?>
@@ -69,10 +70,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="pl">
 <head>
     <?php head("Rejestracja"); ?>
-    <!-- Tags -->
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/tagmanager/3.0.2/tagmanager.min.css">
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tagmanager/3.0.2/tagmanager.min.js"></script>
 
     <style>
         .pb-cmnt-textarea {
@@ -125,12 +122,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   <span class="error" style="color: red; font-size: 15px;"><?php echo $pswr1Err;?></span>
                   <input type="password" class="form-control" id="password_2" placeholder="Powtórz hasło" name="password_2" required>
                   <span class="error" style="color: red; font-size: 15px;"><?php echo $pswr2Err;?></span>
+                  
                   <div class="form-inline justify-content-end" method="post">
-                    <!-- Nie wiem który napis xd -->
                     <button class="btn-sm btn-dark btn-primary float-xs-right text-white" type="submit" name="insert">Załóż konto</button>
                   </div>
-                  <p style="font-size: 15px;">
-                    Masz już konto? <a href="login.php">Zaloguj się</a>
+                  <p>
+                    Masz już konto? <a style="font-size: 15px;" href="login.php">Zaloguj się</a>
                   </p>
                 </form>
               </div>

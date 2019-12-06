@@ -140,7 +140,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </table>  
                 <!-- ================== tags ================== -->
                 <?php if($details['tags'] == false): ?>
-                    <h5>Brak tagów</h5>
+                    <p>Brak tagów</p>
                 <?php else: ?>
                     <h5>Tagi</h5>
                     <div class="container pb-cmnt-container">
@@ -197,9 +197,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <!-- ================= adding comments end / comments ==================== -->
                 <?php if($details['comments'] == false): ?>
-                    <h4>Brak komentarzy</h4>
+                    <p>Brak komentarzy</p>
                 <?php else: ?>
-                    <h4>Komentarze:</h4>
+                    <h5>Komentarze:</h5>
                     <div class="container pb-cmnt-container">
                         <table class="table table-striped">
                             <tbody>

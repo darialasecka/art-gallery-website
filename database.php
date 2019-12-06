@@ -50,15 +50,16 @@ function add_comment($id, $autor, $content, $where_is, $where_id){ //działa
 	//echo "Komentarz został dodany";
 }
 
-function add_person($nickname, $name, $lastname, $email, $age){ //działa
+function add_person($nickname, $name, $lastname, $email, $age, $password){ //działa
 	$conn = connect();
-	$sql = $conn->prepare("INSERT INTO person (nickname, name, lastname, email, age)
-								VALUES (:nickname, :name, :lastname, :email, :age)");
+	$sql = $conn->prepare("INSERT INTO person (nickname, name, lastname, email, age, password)
+								VALUES (:nickname, :name, :lastname, :email, :age, :password)");
 	$sql->bindValue(':nickname', $nickname);
 	$sql->bindValue(':name', $name);
 	$sql->bindValue(':lastname', $lastname);
 	$sql->bindValue(':email', $email);
 	$sql->bindValue(':age', $age);
+	$sql->bindValue(':password', $password);
 	$sql->execute();
 	echo "Osoba została dodana";
 }

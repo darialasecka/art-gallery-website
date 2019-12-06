@@ -1,6 +1,10 @@
 <?php
 require_once('database.php');
 $conn = connect();
+//check if session is sared, if no then start
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 //add_comment(NULL, "Alicja123", "2010-10-10", "Data, źle się dodała");// na DEFAULT nie dizła ;(
 //add_picture(NULL, "http://localhost/img/Felix.png", "Felix", "Alicja123", "Animals", 1, "Kotek"); <--dodawać obrazki jakby były urlem
@@ -8,6 +12,13 @@ $conn = connect();
 //add_person("Kasia1993", "Kasia", "Kowalska", "kasia@test.com", "17");
 //add_picture(NULL, "http://localhost/img/Falling.png", "Falling", "Kasia1993", NULL, NULL, 
 				//"Smoczek spada. Daję dłuższy do testów. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ");
+
+//check if person wants to logout
+if (isset($_GET['logout'])){
+	session_destroy();
+  	unset($_SESSION['nickname']);
+  	header("location: login.php");
+}
 
 function head($title){
 	echo "<!-- ========== Meta Tags ========== -->
@@ -33,7 +44,7 @@ function head($title){
 	    <link href='assets/css/main.css' rel='stylesheet'>";
 }
 
-function logo_main_menu(){
+function logo_main_menu_login(){
 	echo "<!--logo -->
         <div class='logo_box'>
             <a href='index.php'>
@@ -51,7 +62,39 @@ function logo_main_menu(){
                     </a>
                 </li>
                 <li>
+	                <a href='login.php'>
+	                    Zaloguj się
+	                </a>
+	            </li>
+                <li>
+                    <a href='register.php'>
+                    	Zarejestruj się
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!--main menu end -->";
+}
+
+function logo_main_menu_logout(){
+	echo "<!--logo -->
+        <div class='logo_box'>
+            <a href='index.php'>
+                <h1 style='color: white'><b>Galeria<br>Obrazów</b></h1>
+            </a>
+        </div>
+        <!--logo end-->
+
+        <!--main menu -->
+        <div class='side_menu_section'>
+            <ul class='menu_nav'>
+                <li class='active'>
                     <a href='index.php'>
+                        Strona główna
+                    </a>
+                </li>
+                <li>
+                    <a href='profile_page.php?nickname=".$_SESSION['nickname']."/'>
                         Twój profil
                     </a>
                 </li>
@@ -61,18 +104,13 @@ function logo_main_menu(){
                     </a>
                 </li>
                 <li>
-                    <a href='index.php'>
-                        O nas
-                    </a>
-                </li>
-                <li>
-                    <a href='index.php'>
-                        Kontakt
-                    </a>
-                </li>
+	                <a href='index.php?logout'>
+	                    Wyloguj się
+	                </a>
+	            </li>
                 <li>
                     <a href='register.php'>
-                        Rejestracja
+                    	Zarejestruj się
                     </a>
                 </li>
             </ul>
@@ -126,7 +164,8 @@ function social_copy(){
 
 function side_menu($filter){
 	echo "<div class='col-lg-2 col-md-3 col-12 menu_block'>";
-	logo_main_menu();
+	if (!isset($_SESSION['nickname'])) logo_main_menu_login();
+	else logo_main_menu_logout();
 	if ($filter == true) filter();
 	social_copy();
 	echo "</div>";
