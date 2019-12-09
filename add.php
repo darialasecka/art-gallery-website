@@ -149,7 +149,7 @@ function social_copy(){
                         <a href='#'> <i class='ion ion-social-twitter'></i> </a>
                     </li>
                     <li>
-                        <a href='#'> <i class='ion ion-social-github'></i> </a>
+                        <a href='https://github.com/darialasecka/'> <i class='ion ion-social-github'></i> </a>
                     </li>
                 </ul>
                 <div class='copy_right'>

@@ -25,10 +25,9 @@ if(isset($_POST["insert"]))
 
 $title = $description = $tags = "";
 //do formy dodawania komentarza, przerobić na dodawanie obrazu
-$autor = "";
 /* https://github.com/niczak/PHP-Sanitize-Post/blob/master/sanitize.php */
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $autor = check_input($_POST["autor"]);
+    $autor = $_SESSION['nickname'];
     $title = check_input($_POST["title"]);
     $description = check_input($_POST["description"]);
     $tags = $_POST["hidden-tags"];
@@ -114,6 +113,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </style>
 </head>
 <body>
+<?php if (!isset($_SESSION['nickname'])): header("location: login.php");
+    else: ?>
 <div class="loader">
     <div class="loader-outter"></div>
     <div class="loader-inner"></div>
@@ -168,14 +169,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div class="form-inline justify-content-end" method="post">
                             <button class="btn-sm btn-dark btn-primary float-xs-right text-white" type="submit" name="insert">Dodaj</button>
                         </div>
-
-                        Kto(tymczasowo):
-                        <select name="autor" >
-                            <?php foreach ($autors as $autor): ?>
-                               <option value=<?php echo $autor['nickname']; ?>> <?php echo $autor['nickname']; ?> </option>
-                            <?php endforeach; ?>
-                        </select>
-
                     </form>
 
                     <br>  
@@ -207,7 +200,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <!--=================== content body end ====================-->
     </div>
 </div>
-
+<?php endif; ?>
 <!-- Tags -->
 <script type="text/javascript">
     $(".tm-input").tagsManager();

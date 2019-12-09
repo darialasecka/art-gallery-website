@@ -33,9 +33,9 @@ if ($details['comments'] == true) {
 }
 
 //do formy dodawania komentarza
-$autor = $content = $contentErr ="";
+$content = $contentErr ="";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $autor = check_input($_POST["autor"]);
+    $autor = $_SESSION['nickname'];
     $check = false;
 
     if (empty($_POST["content"])) {
@@ -170,31 +170,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <input type="submit" class="button" name="submit" value="Dodaj komentarz">  
                     </form>
                 </div> -->
-                <h5>Dodaj komentarz: </h5>
-                <div class="container pb-cmnt-container">
-                    <form method="post">
-                    Kto(tymczasowo):
-                    <select name="autor" >
-                        <?php foreach ($autors as $autor): ?>
-                           <option value=<?php echo $autor['nickname']; ?>> <?php echo $autor['nickname']; ?> </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <!-- </form> -->
-                    <div class="row justify-content-between">
-                        <div class="col-md-12 col-md-offset-6">
-                            <div class="panel panel-info">
-                                <div class="panel-body">
-                                    <textarea style="font-size: 18px;" placeholder="Dodaj komentarz" class="pb-cmnt-textarea" name="content"><?php echo $content;?></textarea>
-                                    <span class="error" style="color: red;"><?php echo $contentErr;?></span>
-                                    <div class="form-inline justify-content-end" method="post">
-                                        <button class="btn-sm btn-dark btn-primary float-xs-right text-white" type="submit" name="submit">Dodaj</button>
+                <!-- możliwość dodawania komentaży na podstawie sesji, i sam autor też z sesji -->
+                <!-- https://codewithawa.com/posts/complete-user-registration-system-using-php-and-mysql-database -->
+                <?php if (!isset($_SESSION['nickname'])): ?>
+                    <p>Aby dodać komentarz musisz się najpierw <a style="font-size: 15px;" href='login.php'>zalogować</a>.</p>
+                <?php else: ?>
+                    <h5>Dodaj komentarz: </h5>
+                    <div class="container pb-cmnt-container">
+                        <form method="post">
+                        <div class="row justify-content-between">
+                            <div class="col-md-12 col-md-offset-6">
+                                <div class="panel panel-info">
+                                    <div class="panel-body">
+                                        <textarea style="font-size: 18px;" placeholder="Dodaj komentarz" class="pb-cmnt-textarea" name="content"><?php echo $content;?></textarea>
+                                        <span class="error" style="color: red;"><?php echo $contentErr;?></span>
+                                        <div class="form-inline justify-content-end" method="post">
+                                            <button class="btn-sm btn-dark btn-primary float-xs-right text-white" type="submit" name="submit">Dodaj</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        </form>
                     </div>
-                    </form>
-                </div>
+                <?php endif; ?>
                 <!-- ================= adding comments end / comments ==================== -->
                 <?php if($details['comments'] == false): ?>
                     <p>Brak komentarzy</p>
