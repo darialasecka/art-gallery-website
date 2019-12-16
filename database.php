@@ -34,14 +34,13 @@ function add_tag($slug){ //działa
 								VALUES (:slug)");
 	$sql->bindValue(':slug', $slug);
 	$sql->execute();
-	echo "Tag został dodany";
+	//echo "Tag został dodany";
 }
 
-function add_comment($id, $autor, $content, $where_is, $where_id){ //działa
+function add_comment($autor, $content, $where_is, $where_id){ //działa
 	$conn = connect();
-	$sql = $conn->prepare("INSERT INTO comment (id, autor, content, where_is, where_id)
-								VALUES (:id, :autor, :content, :where_is, :where_id)");
-	$sql->bindValue(':id', $id);
+	$sql = $conn->prepare("INSERT INTO comment (autor, content, where_is, where_id)
+								VALUES (:autor, :content, :where_is, :where_id)");
 	$sql->bindValue(':autor', $autor);
 	$sql->bindValue(':content', $content);
 	$sql->bindValue(':where_is', $where_is);
@@ -64,25 +63,23 @@ function add_person($nickname, $name, $lastname, $email, $age, $password){ //dzi
 	echo "Osoba została dodana";
 }
 
-function add_picture($id, $image, $name, $autor, $tags, $description){ //działa, ale ścieżkę trzeba śmiesznie dodawać xd
+function add_picture($image, $name, $autor, $tags, $description){ //działa, ale ścieżkę trzeba śmiesznie dodawać xd
 	$conn = connect();
-	$sql = $conn->prepare("INSERT INTO picture (id, image, name, autor, tags, description )
-								VALUES (:id, :image, :name, :autor, :tags, :description)");
-	$sql->bindValue(':id', $id);
+	$sql = $conn->prepare("INSERT INTO picture (image, name, autor, tags, description )
+								VALUES (:image, :name, :autor, :tags, :description)");
 	$sql->bindValue(':image', $image);
 	$sql->bindValue(':name', $name);
 	$sql->bindValue(':autor', $autor);
 	$sql->bindValue(':tags', $tags);
 	$sql->bindValue(':description', $description);
 	$sql->execute();
-	echo "Obraz został dodany";
+	//echo "Obraz został dodany";
 }
 
-function add_gallery($id, $name, $person, $pictures, $created, $latest_update, $tags, $comments, $description){ //jeszcze nie testowane
+function add_gallery($name, $person, $pictures, $created, $latest_update, $tags, $comments, $description){ //jeszcze nie testowane
 	$conn = connect();
-	$sql = $conn->prepare("INSERT INTO gallery (id, name, person, pictures, created, latest_update, tags, comments, description)
-							VALUES (:id, :name, :person, :pictures, :created, :latest_update, :tags, :comments, :description)");
-	$sql->bindValue(':id', $id);
+	$sql = $conn->prepare("INSERT INTO gallery (name, person, pictures, created, latest_update, tags, comments, description)
+							VALUES (:name, :person, :pictures, :created, :latest_update, :tags, :comments, :description)");
 	$sql->bindValue(':name', $name);
 	$sql->bindValue(':person', $person);
 	$sql->bindValue(':pictures', $pictures);
@@ -93,5 +90,16 @@ function add_gallery($id, $name, $person, $pictures, $created, $latest_update, $
 	$sql->bindValue(':description', $description);
 	$sql->execute();
 	echo "Galleria została stworzoa pomyślnie";
+}
+
+function update_tag_where($tag_slug, $where_is, $where_id){ //jeszcze nie testowane
+	$conn = connect();
+	$sql = $conn->prepare("INSERT INTO tag_where (tag_slug, where_is, where_id)
+							VALUES (:tag_slug, :where_is, :where_id)");
+	$sql->bindValue(':tag_slug', $tag_slug);
+	$sql->bindValue(':where_is', $where_is);
+	$sql->bindValue(':where_id', $where_id);
+	$sql->execute();
+	//echo "Zupdejtowano informacje w tag_where";
 }
 ?>

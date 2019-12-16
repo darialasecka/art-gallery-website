@@ -36,30 +36,20 @@ if ($details['comments'] == true) {
 $content = $contentErr ="";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $autor = $_SESSION['nickname'];
-    $check = false;
 
     if (empty($_POST["content"])) {
         $contentErr = "Nie możesz dodać pustego komentarza";
-        $check = false;
     } else {
         $content = check_input($_POST["content"]);
-        $check = true;
-    }
-
-    if ($check) {
         if ($details['comments'] == false) {
             $stmt = $conn->prepare("UPDATE picture SET comments=:comments WHERE id=:id");
             $stmt->bindValue(":comments", true, PDO::PARAM_INT);
             $stmt->bindValue(":id", $details['id'], PDO::PARAM_INT);
             $stmt->execute();
         }
-        add_comment(NULL, $autor, $content, 'picture', $details['id']);
+        add_comment($autor, $content, 'picture', $details['id']);
         $content = "";
-        $check = false;
     }
-    //else echo "Nie udało się dodać twojego komnetarza";
-    $content = "";
-
 }
 /*function check_input($data) {
   $data = trim($data);
@@ -115,28 +105,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="container-fluid">
                 <!--===================  image details start ====================-->
                 <div style='color: black; font-size: 50px;'><?php echo $details['name'];?> </div>
-                <!-- /*echo '<p style="color: black">".$details['name']."</p>';*/ --> 
                 <?php echo "<img src='".$details['image']."' />"; ?> <!-- póżniej zmienszyć rozmier obrazka -->
                 <table class="table table-striped" style="padding-top: 10px;">
-                  <tbody>
-                    <tr>
-                      <th>Autor</th>
-                        <td>
-                            <a  style="font-size: 19px;" href="/profile_page.php?nickname=<?php echo urlencode($details['autor']) ?>/"><?php echo $details['autor']; //powiększyć czcionkę później?></a>
-                        <!-- <?php 
-                        echo '<a href="/profile_page.php?nickname='.urlencode($details['autor']).'/">'.$details['autor'].'</a>';
-                        //echo '<a href="/profile_page.php?nickname='.$details['autor'].'/>Nic</a>'; 
-                        ?> -->
-
-                        <!-- <?php echo $details['autor'];?> -->
-                          
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>Opis</th>
-                      <td><?php echo $details['description'];?></td>
-                    </tr>
-                  </tbody>
+                    <tbody>
+                        <tr>
+                            <th>Autor</th>
+                            <td><a  style="font-size: 19px;" href="/profile_page.php?nickname=<?php echo urlencode($details['autor']) ?>/"><?php echo $details['autor']; //powiększyć czcionkę później?></a></td>
+                        </tr>
+                        <tr>
+                            <th>Opis</th>
+                            <td><?php echo $details['description'];?></td>
+                        </tr>
+                    </tbody>
                 </table>  
                 <!-- ================== tags ================== -->
                 <?php if($details['tags'] == false): ?>
@@ -158,20 +138,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>    
                 <?php endif; ?>
                 <!-- ================= adding comments ==================== -->
-                <!-- <div>
-                    <h5>Dodaj komentarz: </h5>
-                    <form method="post">
-                        Kto(tymczasowo): <select name="autor" >
-                            <?php foreach ($autors as $autor): ?>
-                               <option value=<?php echo $autor['nickname']; ?>> <?php echo $autor['nickname']; ?> </option>
-                            <?php endforeach; ?>
-                        </select><br>
-                        Kometarz: <textarea name="content"><?php echo $content;?></textarea><span class="error"><?php echo $contentErr;?></span><br>
-                        <input type="submit" class="button" name="submit" value="Dodaj komentarz">  
-                    </form>
-                </div> -->
-                <!-- możliwość dodawania komentaży na podstawie sesji, i sam autor też z sesji -->
-                <!-- https://codewithawa.com/posts/complete-user-registration-system-using-php-and-mysql-database -->
                 <?php if (!isset($_SESSION['nickname'])): ?>
                     <p>Aby dodać komentarz musisz się najpierw <a style="font-size: 15px;" href='login.php'>zalogować</a>.</p>
                 <?php else: ?>
@@ -207,8 +173,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         <td style="font-size: 12px;">
                                             <a style="font-size: 18px;" href="/profile_page.php?nickname=<?php echo urlencode($row['autor']) ?>/"><?php echo $row['autor']; //powiększyć czcionkę później?></a>
                                             <?php echo "<br>";
-                                                  echo $row['added']; //"Data dodania: "
-                                                  ?>
+                                                  echo $row['added']; //"Data dodania: "?>
                                         </td>
                                         <td style="padding-left: 35px;">
                                             <?php echo $row['content'];?>
