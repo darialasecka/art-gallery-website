@@ -76,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="col-lg-10 col-md-9 col-12 body_block  align-content-center">
             <div class="container-fluid">
               <!--===================  register start ====================-->
-              <div style='color: black; font-size: 50px;'>Logowaie</div>
+              <div style='color: black; font-size: 50px;'>Logowanie</div>
                 <div class="container" style="font-size: 18px; padding: 20px;">
                   <form method="post">
                     <input type="text" class="form-control" id="nickname" placeholder="Nick" name="nickname" required>

@@ -77,7 +77,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/tagmanager/3.0.2/tagmanager.min.css">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tagmanager/3.0.2/tagmanager.min.js"></script>
-
     <style>
         .pb-cmnt-textarea {
             resize: none;
@@ -92,7 +91,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .pb-cmnt-container{
             margin-bottom: 20px;
         }
-
     </style>
 </head>
 <body>
@@ -120,16 +118,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="container" style="font-size: 18px; padding: 20px;">
 
                     
-                    <form method="post" enctype="multipart/form-data">  
-                        <!-- <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="customFile" name="image">
-                            <label class="custom-file-label" for="customFile">Wybierz obraz</label>
-                        </div> -->
+                    <form method="post" enctype="multipart/form-data">
+
+
+                            <!-- <span class="btn btn-default btn-file">
+                                Browse <input type="file">
+                            </span> -->
+
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="image" name="image" accept="image/png, image/jpeg, image/gif" required>
+                            <label class="custom-file-label" for="image">Wybierz obraz</label>
+                        </div>
+                        <br>
+                        <br>
+
                         <!-- https://stackoverflow.com/questions/23738311/uploading-selected-picture-without-page-refresh -->
                         <!-- https://stackoverflow.com/questions/55037474/how-to-uploadand-visualization-images-without-refresh-page-in-php -->
-                        <div class="custom-file">
+                        <!-- <div class="custom-file">
                             <input type="file" class="form-control-file" id="image" name="image" accept="image/png, image/jpeg, image/gif" required>
-                        </div>
+                        </div> -->
                         <input type="text" class="form-control" id="title" placeholder="Tytuł" name="title" required>
                         <textarea style="font-size: 18px;" placeholder="Dodaj opis (nie jest wymagany)" class="pb-cmnt-textarea form-control" name="description"><?php echo $description;?></textarea>
                         <!-- === https://bootstrap-tagsinput.github.io/bootstrap-tagsinput/examples/ === -->
@@ -178,6 +185,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <!-- Tags -->
 <script type="text/javascript">
     $(".tm-input").tagsManager();
+
+     $('.custom-file input').change(function (e) {
+        $(this).next('.custom-file-label').html(e.target.files[0].name);
+    });
 </script>
 <?php scripts(); ?>
 </body>

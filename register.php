@@ -2,7 +2,9 @@
 require_once('database.php');
 require_once('add.php');
 
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 // initializing variables
 $nickname = $name = $lastname = $age = $email = "";
