@@ -41,8 +41,11 @@ if($rows) $images = $rows[0];
         <!--=================== content body ====================-->
         <div class="col-lg-10 col-md-9 col-12 body_block  align-content-center">
            <!--=================== person data ====================-->
-
-            <h3>Twoje dane:</h3>
+            <?php if($_SESSION['nickname'] == $nick): ?>
+                <h3>Twoje dane:</h3>
+            <?php else: ?>
+                <h3>Dane: </h3>
+            <?php endif; ?>
             <table class="table table-striped">
                 <tbody>
                     <tr>
@@ -63,9 +66,17 @@ if($rows) $images = $rows[0];
                     </tr>
                 </tbody>
             </table>
-
+            <!-- =========== add gallery ============== -->
+            <!-- <?php if($_SESSION['nickname'] == $nick): ?>
+                <a href="add_gallery.php"><i class='ion ion-plus'></i></a>
+            <?php endif ?> -->
+            <?php if($_SESSION['nickname'] == $nick): ?>
+                <h4>Twoje obrazy:</h4>
+            <?php else: ?>
+                <h4>Obrazy: </h4>
+            <?php endif; ?>
             <div class="container-fluid">
-                <!--=================== images gallery start====================-->
+                <!--=================== images gallery start ====================-->
                 <?php if($rows): ?>
                     <div class="grid img-container justify-content-center no-gutters">
                         <?php foreach($rows as $row): ?> <!--pózniej dorobić jakieś skalowanie obrazków-->
@@ -90,7 +101,7 @@ if($rows) $images = $rows[0];
                         <?php endforeach; ?>
                     </div>
                 <?php else: ?>
-                    <p>Brak obrazów. <a style="font-size: 15px;" href="add_image.php">Dodaj swój pierwszy obraz.</a></p>
+                    <p>Brak obrazów. <?php if($_SESSION['nickname'] == $nick): ?><a style="font-size: 15px;" href="add_image.php">Dodaj swój pierwszy obraz.</a><?php endif; ?></p>
                 <?php endif; ?>
                 <!--=================== images gallery end====================-->
             </div>

@@ -27,22 +27,22 @@ $images = $rows[0];
     </a>
     <div class="row justify-content-center">
         <!--=================== side menu ====================-->
-        <?php side_menu(true); ?>
+        <?php side_menu(false); /* jak zrobię (o ile zorbię) filtrowanie na tagach to z powrotem ustawie na true */?>
         <!--=================== side menu end====================-->
 
         <!--=================== content body ====================-->
-        <div class="col-lg-10 col-md-9 col-12 body_block  align-content-center">
+        <div class="col-lg-10 col-md-9 col-12 body_block">
             <div class="container-fluid">
                 <!--=================== main gallery start====================-->
-                <div class="grid img-container justify-content-center no-gutters">
+                <div class="grid img-container justify-content-center">
                     
                     <?php foreach($rows as $row): ?> <!--pózniej dorobić jakieś skalowanie obrazków-->
                     <a href="/image_details.php?id=<?php echo $row['id'] ?>/">
                     
                     <div class="grid-sizer col-sm-12 col-md-6 col-lg-3"></div>
-                        <div class="grid-item animals col-sm-12 col-md-6 col-lg-3">
+                        <div class="grid-item col-sm-12 col-md-6 col-lg-3 mb-2">
                             <div class="project_box_one">
-                                <?php echo "<img src='".$row['image']."' />"; ?>
+                                <?php echo "<img class='img-responsive center-block' src='".$row['image']."' />"; ?>
                                     <div class="product_info">
                                         <div class="product_info_text">
                                             <div class="product_info_text_inner">

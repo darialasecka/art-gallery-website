@@ -76,17 +76,12 @@ function add_picture($image, $name, $autor, $tags, $description){ //działa, ale
 	//echo "Obraz został dodany";
 }
 
-function add_gallery($name, $person, $pictures, $created, $latest_update, $tags, $comments, $description){ //jeszcze nie testowane
+function add_gallery($name, $person, $description){ //jeszcze nie testowane
 	$conn = connect();
-	$sql = $conn->prepare("INSERT INTO gallery (name, person, pictures, created, latest_update, tags, comments, description)
-							VALUES (:name, :person, :pictures, :created, :latest_update, :tags, :comments, :description)");
+	$sql = $conn->prepare("INSERT INTO gallery (name, person, description)
+							VALUES (:name, :person, :description)");
 	$sql->bindValue(':name', $name);
 	$sql->bindValue(':person', $person);
-	$sql->bindValue(':pictures', $pictures);
-	$sql->bindValue(':created', $created);
-	$sql->bindValue(':latest_update', $latest_update);
-	$sql->bindValue(':tags', $tags);
-	$sql->bindValue(':comments', $comments);
 	$sql->bindValue(':description', $description);
 	$sql->execute();
 	echo "Galleria została stworzoa pomyślnie";

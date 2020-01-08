@@ -7,53 +7,38 @@ $stmt = $conn->prepare("SELECT slug FROM tag");
 $stmt->execute();
 $db_tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$title = $description = $tags = "";
+$name = $description = $tags = "";
 
-//do formy dodawania obrazu
-/* https://github.com/niczak/PHP-Sanitize-Post/blob/master/sanitize.php */
+//do formy dodawania galerii
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $autor = $_SESSION['nickname'];
-    $title = check_input($_POST["title"]);
-    $description = check_input($_POST["description"]);
+    $person = $_SESSION['nickname'];
+    $name = $_POST["name"];
+    $description = $_POST["description"];
     $tags = $_POST["hidden-tags"];
-    $image_name = $_FILES["image"]["name"];
 
-
-    if ($_FILES["image"]["error"] <= 0) { //wątpię czy może być mniejsze od zera ale na razie niech tak zostanie
-        $image_path = $_FILES["image"]["tmp_name"];
-        //sprawdzić czy nazwa już jest i zmienić ją z dopiskiem 1
-        $image_name = check_file($image_name);
-        move_uploaded_file($image_path, "img/$image_name"); //działa
-
-        $path = "http://localhost/img/".$image_name;
-
-        add_picture($path, $title, $autor, 0, $description);//najpier dodam z zerową ilością tagów, a póżiej w updejtowaniu tagów, zmienię na jeden, o ile są jakieś xD
-        $last_id = $conn->lastInsertId();
-        if($tags != NULL){
-            $db_list_of_tags = [];
-            foreach ($db_tags as $tag) {
-                //echo $tag['slug'];
-                array_push($db_list_of_tags, $tag['slug']);
-            }
-            //echo "Tagi:".$tags. "<br />";
-            $list_of_tags = explode(",",$tags);
-            foreach ($list_of_tags as $tag) {
-                $tag = check_input($tag);
-                if(!in_array($tag, $db_list_of_tags)){
-                    //echo "nie ma";//jeślni nie to dodać do tags
-                    add_tag($tag);
-                } 
-                //else echo "jest";
-                update_tag_where($tag, "picture", $last_id);//zupdejtować informacje o tagach dla obrazu
-                $stmt = $conn->prepare("UPDATE picture SET tags=:tags WHERE id=:id");
-                $stmt->bindValue(":tags", true, PDO::PARAM_INT);
-                $stmt->bindValue(":id", $last_id, PDO::PARAM_INT);
-                $stmt->execute();
-            }
+    //poprawić na gallery
+    add_gallery($name, $person, $description);
+    $last_id = $conn->lastInsertId();
+        
+    if($tags != NULL){
+        $db_list_of_tags = [];
+        foreach ($db_tags as $tag) {
+            array_push($db_list_of_tags, $tag['slug']);
         }
-        header("location: image_details.php?id=$last_id");
-        //przekierowanie na stronę "mówiące", że obraz został pomyślnie dodany
+        $list_of_tags = explode(",",$tags);
+        foreach ($list_of_tags as $tag) {
+            $tag = check_input($tag);
+            if(!in_array($tag, $db_list_of_tags)){
+                add_tag($tag);
+            } 
+            update_tag_where($tag, "gallery", $last_id);//zupdejtować informacje o tagach dla galerii
+            $stmt = $conn->prepare("UPDATE gallery SET tags=:tags WHERE id=:id");
+            $stmt->bindValue(":tags", true, PDO::PARAM_INT);
+            $stmt->bindValue(":id", $last_id, PDO::PARAM_INT);
+            $stmt->execute();
+        }
     }
+    header("location: gallery_details.php?id=$last_id"); //to jak już stworzymy
 }
 
 ?>
@@ -61,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <?php head("Dodaj obraz"); ?>
+    <?php head("Stwórz galerię"); ?>
     <!-- Tags -->
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/tagmanager/3.0.2/tagmanager.min.css">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -103,25 +88,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="col-lg-10 col-md-9 col-12 body_block  align-content-center">
             <div class="container-fluid">
                 <!--===================  add image form start ====================-->
-                <div style='color: black; font-size: 50px;'>Dodaj obraz</div>
+                <div style='color: black; font-size: 50px;'>Stwórz galerię</div>
                 <div class="container" style="font-size: 18px; padding: 20px;">
 
                     
-                    <form method="post" enctype="multipart/form-data">
-                        <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="image" name="image" accept="image/png, image/jpeg, image/gif" required>
-                            <label class="custom-file-label" for="image">Wybierz obraz</label>
-                        </div>
-                        <br>
-                        <br>
-                        <input type="text" class="form-control" id="title" placeholder="Tytuł" name="title" required>
+                    <form method="post">
+                        <input type="text" class="form-control" id="name" placeholder="Nazwa" name="name" required>
                         <textarea style="font-size: 18px;" placeholder="Opis (nie jest wymagany)" class="pb-cmnt-textarea form-control" name="description"><?php echo $description;?></textarea>
                         <div class="form-group">
                             <input type="text" name="tags" placeholder="Tagi" class="tm-input form-control tm-input-info"/>
                         </div>
 
                         <div class="form-inline justify-content-end" method="post">
-                            <button class="btn-sm btn-dark btn-primary float-xs-right text-white" type="submit" name="insert">Dodaj</button>
+                            <button class="btn-sm btn-dark btn-primary float-xs-right text-white" type="submit" name="insert">Stwórz</button>
                         </div>
                     </form>
                 </div>  

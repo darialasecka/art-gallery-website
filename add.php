@@ -20,6 +20,19 @@ if (isset($_GET['logout'])){
   	header("location: login.php");
 }
 
+function check_file($file){ //checks if there is already file with this name and adds another number if file exists
+    $number = 1;
+    $filename = pathinfo($file, PATHINFO_FILENAME);
+    $extension = pathinfo($file, PATHINFO_EXTENSION);
+    $path = 'C:\\xampp\\htdocs\\img\\';
+    $new_filename = $filename;
+    while(file_exists($path.$new_filename.'.'.$extension)){
+        $new_filename = $filename.'_'.$number;
+        $number++;
+    }
+    return $new_filename.'.'.$extension;
+}
+
 function head($title){
 	echo "<!-- ========== Meta Tags ========== -->
 	    <meta charset='UTF-8'>
@@ -106,15 +119,15 @@ function logo_main_menu_logout(){
                     </a>
                 </li>
                 <li>
+                    <a href='add_gallery.php'>
+                        Stwórz galerię
+                    </a>
+                </li>
+                <li>
 	                <a href='index.php?logout'>
 	                    Wyloguj się
 	                </a>
 	            </li>
-                <li>
-                    <a href='register.php'>
-                    	Zarejestruj się
-                    </a>
-                </li>
             </ul>
         </div>
         <!--main menu end -->";
