@@ -8,14 +8,14 @@ $stmt = $conn->prepare("SELECT nickname FROM person");
 $stmt->execute();
 $autors = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$stmt = $conn->prepare("SELECT * FROM picture WHERE id=:id");
+$stmt = $conn->prepare("SELECT * FROM group_info WHERE id=:id");
 $stmt->bindValue(":id", $_GET["id"], PDO::PARAM_INT);
 $stmt->execute();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $details = $rows[0];
 
 if ($details['tags'] == true) {
-    $stmt = $conn->prepare("SELECT * FROM tag_where WHERE where_is='picture' AND where_id=:where_id");
+    $stmt = $conn->prepare("SELECT * FROM tag_where WHERE where_is='group' AND where_id=:where_id");
     $stmt->bindValue(":where_id", $details["id"], PDO::PARAM_INT);
     $stmt->execute();
     $tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -23,24 +23,23 @@ if ($details['tags'] == true) {
     $counter = 0;*/
 }
 
+if ($details['members'] == true) {
+    $stmt = $conn->prepare("SELECT * FROM person_group WHERE which_group=:where_id");
+    $stmt->bindValue(":where_id", $details["id"], PDO::PARAM_INT);
+    $stmt->execute();
+    $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
 if ($details['comments'] == true) {
-    $stmt = $conn->prepare("SELECT * FROM comment WHERE where_is='picture' AND where_id=:where_id");
+    $stmt = $conn->prepare("SELECT * FROM comment WHERE where_is='group' AND where_id=:where_id");
     $stmt->bindValue(":where_id", $details['id'], PDO::PARAM_INT);
     $stmt->execute();
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $comments = $rows[0];
 }
 
-if(isset($_SESSION['nickname'])){
-    $stmt = $conn->prepare("SELECT * FROM gallery WHERE person=:nickname");
-    $stmt->bindValue(":nickname", $_SESSION['nickname'], PDO::PARAM_STR);
-    $stmt->execute();
-    $galleries = $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
 //do formy dodawania komentarza
-$content = $contentErr = $which_gallery = $galleryErr = "";
+$content = $contentErr = $groupErr = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if(!empty($_POST['comment'])){
         $autor = $_SESSION['nickname'];
@@ -48,61 +47,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (empty($_POST["content"])) {
             $contentErr = "Nie możesz dodać pustego komentarza";
         } else {
-            $content = check_input($_POST["content"]);
+            $content = $_POST["content"];
             if ($details['comments'] == false) {
-                $stmt = $conn->prepare("UPDATE picture SET comments=:comments WHERE id=:id");
+                $stmt = $conn->prepare("UPDATE group_info SET comments=:comments WHERE id=:id");
                 $stmt->bindValue(":comments", true, PDO::PARAM_INT);
                 $stmt->bindValue(":id", $details['id'], PDO::PARAM_INT);
                 $stmt->execute();
             }
-            add_comment($autor, $content, 'picture', $details['id']);
+            add_comment($autor, $content, 'group', $details['id']);
             $content = "";
         }
     }
     else{
-        $which_gallery = $_POST["which_gallery"];
-
-        $stmt = $conn->prepare("SELECT * FROM gallery WHERE person=:nickname AND name=:name");
-        $stmt->bindValue(":nickname", $_SESSION['nickname'], PDO::PARAM_STR);
-        $stmt->bindValue(":name", $which_gallery, PDO::PARAM_STR);
+        $stmt = $conn->prepare("SELECT * FROM person_group WHERE which_group=:id AND person=:nick");
+        $stmt->bindValue(":nick", $_SESSION['nickname'], PDO::PARAM_STR);
+        $stmt->bindValue(":id", $details['id'], PDO::PARAM_STR);
         $stmt->execute();
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $which_gallery = $rows[0];
-
-        $stmt = $conn->prepare("SELECT * FROM picture_where WHERE picture_id=:id AND where_is='gallery' AND where_id=:where_id ");
-        $stmt->bindValue(":id", $details['id'], PDO::PARAM_STR);
-        $stmt->bindValue(":where_id", $which_gallery['id'], PDO::PARAM_STR);
-        $stmt->execute();
-        $pictures_in_gallery = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        if(!$pictures_in_gallery){
-            if ($which_gallery['pictures'] == false) {
-                $stmt = $conn->prepare("UPDATE gallery SET pictures=:pictures, latest_update=:today WHERE id=:id");
-                $stmt->bindValue(":pictures", true, PDO::PARAM_INT);
-                $stmt->bindValue(":id", $which_gallery['id'], PDO::PARAM_INT);
-                $stmt->bindValue(":today", date("Y-m-d"), PDO::PARAM_INT);
-                $stmt->execute();
-            }
-            update_picture_where($details['id'], 'gallery', $which_gallery['id']);
-        }
-        else{
-            $galleryErr = "Ten obraz jest już w tej galerii";
+        if($rows){
+            $groupErr = "Już należysz do tej grupy";
+        } else{
+            update_person_group($_SESSION['nickname'], $details['id']);
         }
     }
 }
-/*function check_input($data) {
-  $data = trim($data);
-  $data = stripslashes($data);
-  $data = htmlspecialchars($data);
-  return $data;
-}*/
 
 ?>
 
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <?php head("Obraz"); ?>
+    <?php head("Grupa"); ?>
 
     <style>
         .pb-cmnt-textarea {
@@ -144,12 +119,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="container-fluid">
                 <!--===================  image details start ====================-->
                 <div style='color: black; font-size: 50px;'><?php echo $details['name'];?> </div>
-                <?php echo "<img src='".$details['image']."' />"; ?> <!-- póżniej zmienszyć rozmier obrazka -->
                 <table class="table table-striped" style="padding-top: 10px;">
                     <tbody>
                         <tr>
-                            <th>Autor</th>
-                            <td><a  style="font-size: 19px;" href="/profile_page.php?nickname=<?php echo urlencode($details['autor']) ?>/"><?php echo $details['autor']; //powiększyć czcionkę później?></a></td>
+                            <th>Grupa stworzona dnia</th>
+                            <td><?php echo $details['created'];?></td>
                         </tr>
                         <tr>
                             <th>Opis</th>
@@ -157,6 +131,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </tr>
                     </tbody>
                 </table>  
+
+                <div class="container-fluid">
+                <h4>Członkowie: </h4>
+                <?php if($details['members'] == true): ?>
+                    <div class="container pb-cmnt-container">
+                        <table class="table table-striped">
+                            <tbody>
+                                <?php foreach($members as $mem): ?>
+                                    <tr>
+                                        <td style="font-size: 12px;">
+                                            <a style="font-size: 18px;" href="/profile_page.php?nickname=<?php echo urlencode($mem['person']) ?>/"><?php echo $mem['person']; //powiększyć czcionkę później?></a>                                          
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <form method="post">
+                        <div class="row justify-content-between">
+                            <div class="col-md-12 col-md-offset-6">
+                                <div class="panel panel-info">
+                                    <div class="panel-body">
+                                        <span class="error" style="color: red;"><?php echo $groupErr;?></span>
+                                        <div class="form-inline justify-content-end" method="post">
+                                            <button class="btn-sm btn-dark btn-primary float-xs-right text-white" type="submit" name="group" value='group'>Dołącz</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </form>
+                <?php endif; ?>
                 <!-- ================== tags ================== -->
                 <?php if($details['tags'] == false): ?>
                     <p>Brak tagów</p>
@@ -174,28 +180,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 }*/
                             } ?>
                         </p>
-                    </div>    
-                <?php endif; ?>
-
-
-                <?php if(isset($_SESSION['nickname'])): ?>
-                    <h5>Dodaj obraz do galerii</h5>
-                    <div class="container pb-cmnt-container">
-                        <?php if(isset($_SESSION['nickname'])): ?>
-                            <form method='post'>
-                                <select id="which_gallery" class="form-control" name='which_gallery' style='height: 45px;'>
-                                    <?php foreach($galleries as $gallery): ?>
-                                        <option value=<?php echo $gallery['name']; ?>><?php echo $gallery['name']?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <span class="error" style="color: red;"><?php echo $galleryErr;?></span>
-                                <div class="form-inline justify-content-end" method="post">
-                                    <button class="btn-sm btn-dark btn-primary float-xs-right text-white" type="submit" name="gallery">Dodaj</button>
-                                </div>
-                            </form>
-                        <?php else: ?>
-                            <p>Aby dodać obraz do galerii, musisz najpierw ją <a href='add_gallery.php'>stworzyć</a>.</p>
-                        <?php endif; ?>
                     </div>    
                 <?php endif; ?>
                 <!-- ================= adding comments ==================== -->

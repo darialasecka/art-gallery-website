@@ -76,7 +76,7 @@ function add_picture($image, $name, $autor, $tags, $description){ //działa, ale
 	//echo "Obraz został dodany";
 }
 
-function add_gallery($name, $person, $description){ //jeszcze nie testowane
+function add_gallery($name, $person, $description){ //działa
 	$conn = connect();
 	$sql = $conn->prepare("INSERT INTO gallery (name, person, description)
 							VALUES (:name, :person, :description)");
@@ -84,10 +84,29 @@ function add_gallery($name, $person, $description){ //jeszcze nie testowane
 	$sql->bindValue(':person', $person);
 	$sql->bindValue(':description', $description);
 	$sql->execute();
-	echo "Galleria została stworzoa pomyślnie";
+	//echo "Galleria została stworzoa pomyślnie";
 }
 
-function update_tag_where($tag_slug, $where_is, $where_id){ //jeszcze nie testowane
+function add_group($name, $person, $description){ //jeszcze nie testowane
+	$conn = connect();
+	$sql = $conn->prepare("INSERT INTO group_info (name, members, description)
+							VALUES (:name, :members, :description)");
+	$sql->bindValue(':name', $name);
+	$sql->bindValue(':members', 1);
+	$sql->bindValue(':description', $description);
+	$sql->execute();
+
+	$last_id = $conn->lastInsertId();
+	$sql = $conn->prepare("INSERT INTO person_group (person, which_group)
+							VALUES (:person, :which_group)");
+	$sql->bindValue(':person', $person);
+	$sql->bindValue(':which_group', $last_id);
+	$sql->execute();
+	return $last_id;
+	//echo "Grupa została stworzoa pomyślnie";
+}
+
+function update_tag_where($tag_slug, $where_is, $where_id){ //działa
 	$conn = connect();
 	$sql = $conn->prepare("INSERT INTO tag_where (tag_slug, where_is, where_id)
 							VALUES (:tag_slug, :where_is, :where_id)");
@@ -96,5 +115,26 @@ function update_tag_where($tag_slug, $where_is, $where_id){ //jeszcze nie testow
 	$sql->bindValue(':where_id', $where_id);
 	$sql->execute();
 	//echo "Zupdejtowano informacje w tag_where";
+}
+
+function update_picture_where($picture_id, $where_is, $where_id){ //działa
+	$conn = connect();
+	$sql = $conn->prepare("INSERT INTO picture_where (picture_id, where_is, where_id)
+							VALUES (:picture_id, :where_is, :where_id)");
+	$sql->bindValue(':picture_id', $picture_id);
+	$sql->bindValue(':where_is', $where_is);
+	$sql->bindValue(':where_id', $where_id);
+	$sql->execute();
+	//echo "Zupdejtowano informacje w picture_where";
+}
+
+function update_person_group($person, $which_group){ //działa
+	$conn = connect();
+	$sql = $conn->prepare("INSERT INTO person_group (person, which_group)
+							VALUES (:person, :which_group)");
+	$sql->bindValue(':person', $person);
+	$sql->bindValue(':which_group', $which_group);
+	$sql->execute();
+	//echo "Zupdejtowano informacje w person_group";
 }
 ?>

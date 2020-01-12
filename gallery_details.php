@@ -31,7 +31,7 @@ if ($details['pictures'] == true) {
 }
 
 if ($details['comments'] == true) {
-    $stmt = $conn->prepare("SELECT * FROM comment WHERE where_is='picture' AND where_id=:where_id");
+    $stmt = $conn->prepare("SELECT * FROM comment WHERE where_is='gallery' AND where_id=:where_id");
     $stmt->bindValue(":where_id", $details['id'], PDO::PARAM_INT);
     $stmt->execute();
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -48,12 +48,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $content = $_POST["content"];
         if ($details['comments'] == false) {
-            $stmt = $conn->prepare("UPDATE picture SET comments=:comments WHERE id=:id");
+            $stmt = $conn->prepare("UPDATE gallery SET comments=:comments WHERE id=:id");
             $stmt->bindValue(":comments", true, PDO::PARAM_INT);
             $stmt->bindValue(":id", $details['id'], PDO::PARAM_INT);
             $stmt->execute();
         }
-        add_comment($autor, $content, 'picture', $details['id']);
+        add_comment($autor, $content, 'gallery', $details['id']);
         $content = "";
     }
 }
@@ -187,7 +187,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         <textarea style="font-size: 18px;" placeholder="Dodaj komentarz" class="pb-cmnt-textarea" name="content"><?php echo $content;?></textarea>
                                         <span class="error" style="color: red;"><?php echo $contentErr;?></span>
                                         <div class="form-inline justify-content-end" method="post">
-                                            <button class="btn-sm btn-dark btn-primary float-xs-right text-white" type="submit" name="submit">Dodaj</button>
+                                            <button class="btn-sm btn-dark btn-primary float-xs-right text-white" type="submit" name="comment" value='comment'>Dodaj</button>
                                         </div>
                                     </div>
                                 </div>

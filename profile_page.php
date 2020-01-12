@@ -66,7 +66,12 @@ if($rows) $images = $rows[0];
                     </tr>
                 </tbody>
             </table>
-            <!-- =========== add gallery ============== -->
+            <!-- =========== check gallery list ============== -->
+            <a href="/gallery_list.php?nickname=<?php echo urlencode($details['nickname']) ?>/"><h4>Tu możesz zobaczyć listę galerii.</h4></a>
+            
+
+            <a href="/group_list.php?nickname=<?php echo urlencode($details['nickname']) ?>/"><h4>Tu możesz zobaczyć listę grup, do których należy.</h4></a>
+                                           
             <!-- <?php if($_SESSION['nickname'] == $nick): ?>
                 <a href="add_gallery.php"><i class='ion ion-plus'></i></a>
             <?php endif ?> -->

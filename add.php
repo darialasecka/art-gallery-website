@@ -124,6 +124,26 @@ function logo_main_menu_logout(){
                     </a>
                 </li>
                 <li>
+                    <a href='gallery_list.php?nickname=".$_SESSION['nickname']."/'>
+                        Twoje galerie
+                    </a>
+                </li>
+                <li>
+                    <a href='all_groups.php'>
+                        Wszystkie grupy
+                    </a>
+                </li>
+                <li>
+                    <a href='group_list.php?nickname=".$_SESSION['nickname']."/'>
+                        Moje grupy
+                    </a>
+                </li>
+                <li>
+                    <a href='add_group.php'>
+                        Stwórz grupę
+                    </a>
+                </li>
+                <li>
 	                <a href='index.php?logout'>
 	                    Wyloguj się
 	                </a>
